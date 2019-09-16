@@ -1,3 +1,5 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.paymentsorchestrator.controllers.MicroserviceHelloWorldController.hello
+GET        /des/customer-data/vrn/:vrn        controllers.des.DesController.getCustomerData(vrn : Vrn)
+GET        /des/financial-data/vrn/:vrn       controllers.des.DesController.getFinancialData(vrn : Vrn)
+GET        /des/obligations-data/vrn/:vrn     controllers.des.DesController.getObligationData(vrn : Vrn)

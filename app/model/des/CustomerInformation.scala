@@ -26,17 +26,10 @@ object CustomerInformation {
   implicit val format: OFormat[CustomerInformation] = Json.format[CustomerInformation]
 }
 
-final case class ApprovedInformation
-  (
+final case class ApprovedInformation(
     bankDetails: Option[BankDetails],
     PPOB:        Option[PPOB]
-) {
-
-  val bankDetailsExist = bankDetails.isDefined
-
-  val addressExists = PPOB.isDefined
-
-}
+)
 
 object ApprovedInformation {
 

@@ -19,16 +19,17 @@ package support
 import java.time.LocalDate
 
 import model.Vrn
-import model.des._
+import model.des.{DirectDebitDetails, _}
 import play.api.libs.json.{JsValue, Json}
 
 object DesData {
 
-  val bankDetails: BankDetails = BankDetails("*********", "****2490", "40****")
+  val bankDetails: BankDetails = BankDetails("Tester Surname", "70872490", "404784")
   val address: Address = Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))
   val ppob: PPOB = PPOB(Some(address))
   val approvedInformation = ApprovedInformation(Some(bankDetails), Some(ppob))
   val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation))
+  val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
 
   //language=JSON
   val approvedInformationJson: JsValue = Json.parse(
@@ -36,9 +37,9 @@ object DesData {
        {
           "approvedInformation":{
              "bankDetails":{
-                "accountHolderName":"*********",
-                "bankAccountNumber":"****2490",
-                "sortCode":"40****"
+                "accountHolderName":"Tester Surname",
+                "bankAccountNumber":"70872490",
+                "sortCode":"404784"
              },
              "PPOB":{
                 "address":{
@@ -185,9 +186,9 @@ object DesData {
                  "websiteAddress": "www.tumbleweed.com"
              },
              "bankDetails": {
-                 "accountHolderName": "*********",
-                 "bankAccountNumber": "****2490",
-                 "sortCode": "40****"
+                 "accountHolderName": "Tester Surname",
+                 "bankAccountNumber": "70872490",
+                 "sortCode": "404784"
              },
              "businessActivities": {
                  "primaryMainCode": "10410",
@@ -226,7 +227,7 @@ object DesData {
                          "dateReceived": "2019-03-04"
                      },
                      "accountHolderName": "******",
-                     "bankAccountNumber": "****2490",
+                     "bankAccountNumber": "70872490",
                      "sortCode": "****84"
                  },
                  "mandationStatus": {
@@ -315,7 +316,7 @@ object DesData {
                          "dateReceived": "2019-03-04"
                      },
                      "accountHolderName": "******",
-                     "bankAccountNumber": "****2490",
+                     "bankAccountNumber": "70872490",
                      "sortCode": "****84"
                  },
                  "mandationStatus": {
@@ -586,6 +587,33 @@ object DesData {
                                                        }
                                                    ]
                                                }
+       """.stripMargin)
+
+  // language=JSON
+  def ddOk: JsValue = Json.parse(
+    s"""
+       {
+           "directDebitMandateFound": true,
+           "directDebitDetails": [
+               {
+                   "directDebitInstructionNumber": "091700000409",
+                   "directDebitPlanType": "VPP",
+                   "dateCreated": "2019-09-20",
+                   "accountHolderName": "Tester Surname",
+                   "sortCode": "404784",
+                   "accountNumber": "70872490"
+               }
+           ]
+       }
+       """.stripMargin)
+
+  // language=JSON
+  val ddNotFound: JsValue = Json.parse(
+    s"""
+                                                     {
+                                                        "code": "NOT_FOUND",
+                                                        "reason": "The back end has indicated that there is no match found for the given identifier"
+                                                    }
        """.stripMargin)
 }
 

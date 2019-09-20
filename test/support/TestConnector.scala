@@ -28,8 +28,6 @@ class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext
 
   val port = 19001
 
-  def showResults(vrn: Vrn)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET(s"http://localhost:$port/vat-repayment-tracker-frontend/show-results/vrn/${vrn.value}")
-
   def getCustomerData(vrn: Vrn)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET(
     s"http://localhost:$port/payments-orchestrator/des/customer-data/vrn/${vrn.value}")
 
@@ -38,5 +36,8 @@ class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext
 
   def getFinancialData(vrn: Vrn)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET(
     s"http://localhost:$port/payments-orchestrator/des/financial-data/vrn/${vrn.value}")
+
+  def getDDData(vrn: Vrn)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET(
+    s"http://localhost:$port/payments-orchestrator/des/dd-data/vrn/${vrn.value}")
 
 }

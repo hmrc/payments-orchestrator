@@ -45,6 +45,19 @@ object DesData {
   val vatObligations = VatObligations(Seq(vatObligation))
 
   //language=JSON
+  val directDebitDataJson: JsValue = Json.parse(
+    s"""{
+        "directDebitDetails": [
+                     {
+                          "accountHolderName": "Tester Surname",
+                         "sortCode": "404784",
+                         "accountNumber": "70872490"
+                      }
+                  ]
+                  }
+       """.stripMargin)
+
+  //language=JSON
   val approvedInformationJson: JsValue = Json.parse(
     s"""
        {

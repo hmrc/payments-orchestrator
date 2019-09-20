@@ -101,4 +101,33 @@ object WireMockResponses {
 
   }
 
+  def ddNotFound(vrn: Vrn) = {
+    stubFor(get(urlMatching(s"""/cross-regime/direct-debits/vatc/vrn/${vrn.value}"""))
+      .willReturn(aResponse()
+        .withStatus(404)
+        .withBody(
+          DesData.ddNotFound.toString()
+            .stripMargin)))
+
+  }
+
+  def ddOk(vrn: Vrn) = {
+    stubFor(get(urlMatching(s"""/cross-regime/direct-debits/vatc/vrn/${vrn.value}"""))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          DesData.ddOk.toString()
+            .stripMargin)))
+  }
+
+  def ddOkNoMandate(vrn: Vrn) = {
+    stubFor(get(urlMatching(s"""/cross-regime/direct-debits/vatc/vrn/${vrn.value}"""))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          DesData.ddOkNoMandate.toString()
+            .stripMargin)))
+
+  }
+
 }

@@ -83,6 +83,14 @@ class DesControllerSpec extends ItSpec {
     dd shouldBe DesData.directDebitData
   }
 
+  "Get DD data no mandate" in {
+    WireMockResponses.ddOkNoMandate(vrn)
+    val result = connector.getDDData(vrn).futureValue
+    result.status shouldBe Status.OK
+    val dd = result.json.as[DirectDebitData]
+    dd shouldBe DesData.directDebitDataNone
+  }
+
   "Get DD data 404" in {
     WireMockResponses.ddNotFound(vrn)
     val result = connector.getDDData(vrn).failed.futureValue

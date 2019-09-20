@@ -30,6 +30,19 @@ object DesData {
   val approvedInformation = ApprovedInformation(Some(bankDetails), Some(ppob))
   val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation))
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
+  val directDebitDataNone: DirectDebitData = DirectDebitData(None)
+  val transaction: Transaction = Transaction("18AC", "March 2018", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), BigDecimal(5.56), BigDecimal(5.56))
+  val financialData: FinancialData = FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(transaction))
+  val obligation1 = ObligationDetail("O", LocalDate.parse("2018-04-01"), LocalDate.parse("2018-04-30"), LocalDate.parse("2018-04-15"),
+                                          LocalDate.parse("2018-06-07"), "18AD")
+  val obligation2 = ObligationDetail("O", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), LocalDate.parse("2027-11-02"),
+                                          LocalDate.parse("2018-05-07"), "18AC")
+  val obligation3 = ObligationDetail("O", LocalDate.parse("2018-02-01"), LocalDate.parse("2018-02-28"), LocalDate.parse("2018-04-12"),
+                                          LocalDate.parse("2018-04-07"), "18AB")
+  val obligation4 = ObligationDetail("O", LocalDate.parse("2018-01-01"), LocalDate.parse("2018-01-31"), LocalDate.parse("2018-04-15"),
+                                          LocalDate.parse("2018-03-07"), "18AA")
+  val vatObligation = VatObligation(Seq(obligation1, obligation2, obligation3, obligation4))
+  val vatObligations = VatObligations(Seq(vatObligation))
 
   //language=JSON
   val approvedInformationJson: JsValue = Json.parse(
@@ -55,10 +68,6 @@ object DesData {
        }
      """.stripMargin)
 
-  val transaction: Transaction = Transaction("18AC", "March 2018", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), BigDecimal(5.56), BigDecimal(5.56))
-
-  val financialData: FinancialData = FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(transaction))
-
   //language=JSON
   val financialDataJson: JsValue = Json.parse(
     s"""
@@ -80,18 +89,6 @@ object DesData {
        }
      """.stripMargin
   )
-
-  val obligation1 = ObligationDetail("O", LocalDate.parse("2018-04-01"), LocalDate.parse("2018-04-30"), LocalDate.parse("2018-04-15"),
-                                          LocalDate.parse("2018-06-07"), "18AD")
-  val obligation2 = ObligationDetail("O", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), LocalDate.parse("2027-11-02"),
-                                          LocalDate.parse("2018-05-07"), "18AC")
-  val obligation3 = ObligationDetail("O", LocalDate.parse("2018-02-01"), LocalDate.parse("2018-02-28"), LocalDate.parse("2018-04-12"),
-                                          LocalDate.parse("2018-04-07"), "18AB")
-  val obligation4 = ObligationDetail("O", LocalDate.parse("2018-01-01"), LocalDate.parse("2018-01-31"), LocalDate.parse("2018-04-15"),
-                                          LocalDate.parse("2018-03-07"), "18AA")
-
-  val vatObligation = VatObligation(Seq(obligation1, obligation2, obligation3, obligation4))
-  val vatObligations = VatObligations(Seq(vatObligation))
 
   //language=JSON
   val vatObligationsJson: JsValue = Json.parse(
@@ -615,5 +612,14 @@ object DesData {
                                                         "reason": "The back end has indicated that there is no match found for the given identifier"
                                                     }
        """.stripMargin)
+
+  // language=JSON
+  val ddOkNoMandate: JsValue = Json.parse(
+    s"""
+       {
+     "directDebitMandateFound": false
+      }
+           """.stripMargin)
+
 }
 

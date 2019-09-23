@@ -24,7 +24,7 @@ import play.api.libs.json.{JsValue, Json}
 
 object DesData {
 
-  val bankDetails: BankDetails = BankDetails("Tester Surname", "70872490", "404784")
+  val bankDetails: BankDetails = BankDetails("Account holder", "11112222", "667788")
   val address: Address = Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))
   val ppob: PPOB = PPOB(Some(address))
   val approvedInformation = ApprovedInformation(Some(bankDetails), Some(ppob))
@@ -63,9 +63,9 @@ object DesData {
        {
           "approvedInformation":{
              "bankDetails":{
-                "accountHolderName":"Tester Surname",
-                "bankAccountNumber":"70872490",
-                "sortCode":"404784"
+                "accountHolderName":"Account holder",
+                "bankAccountNumber":"11112222",
+                "sortCode":"667788"
              },
              "PPOB":{
                 "address":{
@@ -196,9 +196,9 @@ object DesData {
                  "websiteAddress": "www.tumbleweed.com"
              },
              "bankDetails": {
-                 "accountHolderName": "Tester Surname",
-                 "bankAccountNumber": "70872490",
-                 "sortCode": "404784"
+                 "accountHolderName": "Account holder",
+                 "bankAccountNumber": "11112222",
+                 "sortCode": "667788"
              },
              "businessActivities": {
                  "primaryMainCode": "10410",
@@ -236,9 +236,9 @@ object DesData {
                          "formBundle": "092000001020",
                          "dateReceived": "2019-03-04"
                      },
-                     "accountHolderName": "******",
-                     "bankAccountNumber": "70872490",
-                     "sortCode": "****84"
+                     "accountHolderName": "Account holder",
+                     "bankAccountNumber": "11112222",
+                     "sortCode": "667788"
                  },
                  "mandationStatus": {
                      "formInformation": {
@@ -325,9 +325,9 @@ object DesData {
                          "formBundle": "092000001020",
                          "dateReceived": "2019-03-04"
                      },
-                     "accountHolderName": "******",
+                     "accountHolderName": "Account holder",
                      "bankAccountNumber": "70872490",
-                     "sortCode": "****84"
+                     "sortCode": "667788"
                  },
                  "mandationStatus": {
                      "formInformation": {

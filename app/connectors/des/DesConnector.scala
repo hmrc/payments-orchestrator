@@ -33,14 +33,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpClient, configuration: Configuration)(implicit ec: ExecutionContext) {
 
   private val serviceURL: String = servicesConfig.baseUrl("des")
-  private val authorisationToken: String = configuration.get[String]("microservice.services.des.authorization-token")
+  private val authorizationToken: String = configuration.get[String]("microservice.services.des.authorizationToken")
   private val serviceEnvironment: String = configuration.get[String]("microservice.services.des.environment")
   private val obligationsUrl: String = configuration.get[String]("microservice.services.des.obligations-url")
   private val financialsUrl: String = configuration.get[String]("microservice.services.des.financials-url")
   private val customerUrl: String = configuration.get[String]("microservice.services.des.customer-url")
   private val ddUrl: String = configuration.get[String]("microservice.services.des.dd-url")
 
-  private val desHeaderCarrier: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorisationToken")))
+  private val desHeaderCarrier: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorizationToken")))
     .withExtraHeaders("Environment" -> serviceEnvironment)
 
   def getObligations(vrn: Vrn): Future[VatObligations] = {

@@ -16,11 +16,9 @@
 
 package connectors.des
 
-import java.time.format.DateTimeFormatter
-
 import javax.inject.{Inject, Singleton}
 import model.Vrn
-import model.des.{CustomerInformation, DirectDebitData, FinancialData, VatObligations}
+import model.des.{CustomerInformation, DirectDebitData, FinancialData}
 import play.api.{Configuration, Logger}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
@@ -42,15 +40,6 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
 
   private val desHeaderCarrier: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorizationToken")))
     .withExtraHeaders("Environment" -> serviceEnvironment)
-
-  def getObligations(vrn: Vrn): Future[VatObligations] = {
-    Logger.debug(s"Calling des api 1330 for vrn ${vrn}")
-    implicit val hc: HeaderCarrier = desHeaderCarrier
-    val fullDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val getObligationsURL: String = s"$serviceURL$obligationsUrl/${vrn.value}/VATC?status=O"
-    Logger.debug(s"""Calling des api 1330 with url ${getObligationsURL}""")
-    httpClient.GET[VatObligations](getObligationsURL)
-  }
 
   def getFinancialData(vrn: Vrn): Future[FinancialData] = {
     Logger.debug(s"Calling des api 1166 for vrn ${vrn}")

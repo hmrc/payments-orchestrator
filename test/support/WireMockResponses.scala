@@ -21,16 +21,6 @@ import model.Vrn
 
 object WireMockResponses {
 
-  def obligationsOk(vrn: Vrn) = {
-    stubFor(get(urlMatching("/enterprise/obligation-data/vrn/.*"))
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withBody(
-          DesData.vatObligationsJson.toString()
-            .stripMargin)))
-
-  }
-
   def financialsOkMultiple(vrn: Vrn) = {
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()
@@ -77,16 +67,6 @@ object WireMockResponses {
         .withStatus(404)
         .withBody(
           DesData.financialDataNotFound.toString()
-            .stripMargin)))
-
-  }
-
-  def obligationsNotFound = {
-    stubFor(get(urlMatching("/enterprise/obligation-data/vrn/.*"))
-      .willReturn(aResponse()
-        .withStatus(404)
-        .withBody(
-          DesData.obligationsDataNotFound.toString()
             .stripMargin)))
 
   }

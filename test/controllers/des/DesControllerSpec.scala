@@ -64,6 +64,7 @@ class DesControllerSpec extends ItSpec {
     WireMockResponses.obligationsOk(vrn)
     val result = connector.getObligations(vrn).futureValue
     result.status shouldBe Status.OK
+
     val vatObligations = result.json.as[VatObligations]
     vatObligations shouldBe DesData.vatObligations
     vatObligations.obligations(0).obligationDetails.size shouldBe 4

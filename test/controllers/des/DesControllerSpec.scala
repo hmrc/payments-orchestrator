@@ -17,7 +17,7 @@
 package controllers.des
 
 import model.Vrn
-import model.des.{CustomerInformation, DirectDebitData, FinancialData, VatObligations}
+import model.des.{CustomerInformation, DirectDebitData, FinancialData}
 import play.api.Logger
 import play.api.http.Status
 import support.{DesData, ItSpec, WireMockResponses}
@@ -57,21 +57,6 @@ class DesControllerSpec extends ItSpec {
   "Get Financial data 404" in {
     WireMockResponses.financialsNotFound
     val result = connector.getFinancialData(vrn).failed.futureValue
-    result.getMessage should include("returned 404 (Not Found)")
-  }
-
-  "Get Obligation data" in {
-    WireMockResponses.obligationsOk(vrn)
-    val result = connector.getObligations(vrn).futureValue
-    result.status shouldBe Status.OK
-    val vatObligations = result.json.as[VatObligations]
-    vatObligations shouldBe DesData.vatObligations
-    vatObligations.obligations(0).obligationDetails.size shouldBe 4
-  }
-
-  "Get Obligation data 404" in {
-    WireMockResponses.obligationsNotFound
-    val result = connector.getObligations(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
   }
 

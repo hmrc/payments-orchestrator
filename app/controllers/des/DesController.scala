@@ -34,12 +34,6 @@ class DesController @Inject() (
 
   extends BackendController(cc) {
 
-  def getObligationData(vrn: Vrn): Action[AnyContent] = Action.async { implicit request =>
-    for {
-      od <- desConnector.getObligations(vrn)
-    } yield (Ok(Json.toJson(od)))
-  }
-
   def getFinancialData(vrn: Vrn): Action[AnyContent] = Action.async { implicit request =>
     for {
       fd <- desConnector.getFinancialData(vrn)

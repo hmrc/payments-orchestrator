@@ -31,7 +31,7 @@ object DesData {
   val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation))
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
   val directDebitDataNone: DirectDebitData = DirectDebitData(None)
-  val transaction: Transaction = Transaction("18AC", "March 2018", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), BigDecimal(5.56), BigDecimal(5.56))
+  val transaction: Transaction = Transaction("VAT Return Credit Charge", "18AC", "March 2018", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), BigDecimal(5.56), BigDecimal(5.56))
   val financialData: FinancialData = FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(transaction))
 
   //language=JSON
@@ -81,6 +81,7 @@ object DesData {
           "processingDate":"2019-08-20T10:44:05Z",
           "financialTransactions":[
              {
+                "chargeType" : "VAT Return Credit Charge",
                 "periodKey":"18AC",
                 "periodKeyDescription":"March 2018",
                 "taxPeriodFrom":"2018-03-01",
@@ -305,7 +306,7 @@ object DesData {
                                                    "processingDate": "2019-08-20T10:44:05Z",
                                                    "financialTransactions": [
                                                        {
-                                                           "chargeType": "VAT Protective Assessment",
+                                                           "chargeType": "VAT Return Credit Charge",
                                                            "mainType": "VAT Protective Assessment",
                                                            "periodKey": "18AC",
                                                            "periodKeyDescription": "March 2018",
@@ -333,7 +334,7 @@ object DesData {
                                                            ]
                                                        },
                                                        {
-                                                           "chargeType": "VAT PA Default Interest",
+                                                           "chargeType": "VAT Return Credit Charge",
                                                            "mainType": "VAT PA Default Interest",
                                                            "periodKey": "18AC",
                                                            "periodKeyDescription": "March 2018",
@@ -360,7 +361,7 @@ object DesData {
                                                            ]
                                                        },
                                                        {
-                                                           "chargeType": "VAT Return Debit Charge",
+                                                           "chargeType": "VAT Return Credit Charge",
                                                            "mainType": "VAT Return Charge",
                                                            "periodKey": "18AC",
                                                            "periodKeyDescription": "March 2018",
@@ -392,7 +393,7 @@ object DesData {
                                                            ]
                                                        },
                                                        {
-                                                           "chargeType": "VAT Protective Assessment",
+                                                           "chargeType": "VAT Return Credit Charge",
                                                            "mainType": "VAT Protective Assessment",
                                                            "periodKey": "18AC",
                                                            "periodKeyDescription": "March 2018",
@@ -420,7 +421,7 @@ object DesData {
                                                            ]
                                                        },
                                                        {
-                                                           "chargeType": "VAT PA Default Interest",
+                                                           "chargeType": "VAT Return Credit Charge",
                                                            "mainType": "VAT PA Default Interest",
                                                            "periodKey": "18AC",
                                                            "periodKeyDescription": "March 2018",
@@ -460,7 +461,7 @@ object DesData {
                                                    "processingDate": "2019-08-20T10:44:05Z",
                                                    "financialTransactions": [
                                                        {
-                                                           "chargeType": "VAT PA Default Interest",
+                                                           "chargeType": "VAT Return Credit Charge",
                                                            "mainType": "VAT PA Default Interest",
                                                            "periodKey": "18AC",
                                                            "periodKeyDescription": "March 2018",

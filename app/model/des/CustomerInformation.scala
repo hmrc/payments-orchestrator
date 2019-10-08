@@ -56,9 +56,9 @@ object Address {
 }
 
 final case class BankDetails(
-    accountHolderName: String,
-    bankAccountNumber: String,
-    sortCode:          String
+    accountHolderName: Option[String],
+    bankAccountNumber: Option[String],
+    sortCode:          Option[String]
 )
 
 object BankDetails {

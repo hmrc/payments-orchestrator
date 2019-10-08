@@ -24,7 +24,7 @@ import play.api.libs.json.{JsValue, Json}
 
 object DesData {
 
-  val bankDetails: BankDetails = BankDetails("Account holder", "11112222", "667788")
+  val bankDetails: BankDetails = BankDetails(Some("Account holder"), Some("11112222"), Some("667788"))
   val address: Address = Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))
   val ppob: PPOB = PPOB(Some(address))
   val approvedInformation = ApprovedInformation(Some(bankDetails), Some(ppob))

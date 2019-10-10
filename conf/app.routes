@@ -3,3 +3,4 @@
 GET        /des/customer-data/vrn/:vrn        controllers.des.DesController.getCustomerData(vrn : Vrn)
 GET        /des/financial-data/vrn/:vrn       controllers.des.DesController.getFinancialData(vrn : Vrn)
 GET        /des/dd-data/vrn/:vrn              controllers.des.DesController.getDDData(vrn : Vrn)
+GET        /des/repayment-details/vrn/:vrn    controllers.des.DesController.getRepaymentDetails(vrn : Vrn)

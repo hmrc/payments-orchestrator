@@ -34,6 +34,42 @@ object DesData {
   val transaction: Transaction = Transaction("VAT Return Credit Charge", "18AC", "March 2018", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), BigDecimal(5.56), BigDecimal(5.56))
   val financialData: FinancialData = FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(transaction))
 
+  val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
+    LocalDate.parse("2001-01-01"),
+    LocalDate.parse("2001-01-01"),
+    LocalDate.parse("2001-01-01"),
+    "18AC",
+    "INITIAL",
+    1000,
+    1,
+    100.02
+  )
+
+  val repaymentsDetail: Seq[RepaymentDetailData] = Seq(repaymentDetail)
+
+  //language=JSON
+  val repaymentDetailJson: JsValue = Json.parse(
+    s"""[{
+        "returnCreationDate": "2001-01-01",
+        "sentForRiskingDate": "2001-01-01",
+        "lastUpdateReceivedDate": "2001-01-01",
+        "periodKey": "18AC",
+        "riskingStatus": "INITIAL",
+        "vatToPay_BOX5": 1000,
+        "supplementDelayDays": 1,
+        "originalPostingAmount": 100.02
+    }]
+""".stripMargin
+  )
+
+  //language=JSON
+  val repaymentDetailsNotFound: JsValue = Json.parse(
+    s"""{
+   "code": "NOT_FOUND",
+   "reason": "The remote endpoint has indicated that no data can be found"}
+""".stripMargin
+  )
+
   //language=JSON
   val directDebitDataJson: JsValue = Json.parse(
     s"""{

@@ -40,4 +40,7 @@ class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext
   def getDDData(vrn: Vrn)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET(
     s"http://localhost:$port/payments-orchestrator/des/dd-data/vrn/${vrn.value}")
 
+  def getRepaymentDetails(vrn: Vrn)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET(
+    s"http://localhost:$port/payments-orchestrator/des/repayment-details/vrn/${vrn.value}")
+
 }

@@ -110,4 +110,23 @@ object WireMockResponses {
 
   }
 
+  def repaymentDetailsNotFound(vrn: Vrn) = {
+    stubFor(get(urlMatching(s"""/cross-regime/repayment/VATC/VRN/${vrn.value}"""))
+      .willReturn(aResponse()
+        .withStatus(404)
+        .withBody(
+          DesData.repaymentDetailsNotFound.toString()
+            .stripMargin)))
+
+  }
+
+  def repaymentDetailsOk(vrn: Vrn) = {
+    stubFor(get(urlMatching(s"""/cross-regime/repayment/VATC/VRN/${vrn.value}"""))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          DesData.repaymentDetailJson.toString()
+            .stripMargin)))
+  }
+
 }

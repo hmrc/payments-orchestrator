@@ -52,4 +52,10 @@ class DesController @Inject() (
     } yield (Ok(Json.toJson(dd)))
   }
 
+  def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = Action.async { implicit request =>
+    for {
+      rd <- desConnector.getRepaymentDetails(vrn)
+    } yield (Ok(Json.toJson(rd)))
+  }
+
 }

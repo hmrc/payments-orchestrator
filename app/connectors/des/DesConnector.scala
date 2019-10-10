@@ -18,7 +18,7 @@ package connectors.des
 
 import javax.inject.{Inject, Singleton}
 import model.Vrn
-import model.des.{CustomerInformation, DirectDebitData, FinancialData}
+import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import play.api.{Configuration, Logger}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
@@ -37,6 +37,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   private val financialsUrl: String = configuration.get[String]("microservice.services.des.financials-url")
   private val customerUrl: String = configuration.get[String]("microservice.services.des.customer-url")
   private val ddUrl: String = configuration.get[String]("microservice.services.des.dd-url")
+  private val repaymentDetailsUrl: String = configuration.get[String]("microservice.services.des.repaymentdetails-url")
 
   private val desHeaderCarrier: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorizationToken")))
     .withExtraHeaders("Environment" -> serviceEnvironment)
@@ -60,9 +61,17 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   def getDDData(vrn: Vrn): Future[DirectDebitData] = {
     Logger.debug(s"Calling des api 1396 for vrn ${vrn}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getDDUrl: String = s"$serviceURL$ddUrl/vatc/vrn/${vrn.value}"
+    val getDDUrl: String = s"$serviceURL$ddUrl/${vrn.value}"
     Logger.debug(s"""Calling des api 1396 with url ${getDDUrl}""")
     httpClient.GET[DirectDebitData](getDDUrl)
+  }
+
+  def getRepaymentDetails(vrn: Vrn): Future[Seq[RepaymentDetailData]] = {
+    Logger.debug(s"Calling des api 1533 for vrn ${vrn}")
+    implicit val hc: HeaderCarrier = desHeaderCarrier
+    val getRDUrl: String = s"$serviceURL$repaymentDetailsUrl/${vrn.value}"
+    Logger.debug(s"""Calling des api 1533 with url ${getRDUrl}""")
+    httpClient.GET[Seq[RepaymentDetailData]](getRDUrl)
   }
 
 }

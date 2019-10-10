@@ -17,7 +17,7 @@
 package controllers.des
 
 import model.Vrn
-import model.des.{CustomerInformation, DirectDebitData, FinancialData}
+import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import play.api.Logger
 import play.api.http.Status
 import support.{DesData, ItSpec, WireMockResponses}
@@ -79,6 +79,20 @@ class DesControllerSpec extends ItSpec {
   "Get DD data 404" in {
     WireMockResponses.ddNotFound(vrn)
     val result = connector.getDDData(vrn).failed.futureValue
+    result.getMessage should include("returned 404 (Not Found)")
+  }
+
+  "Get repayment data" in {
+    WireMockResponses.repaymentDetailsOk(vrn)
+    val result = connector.getRepaymentDetails(vrn).futureValue
+    result.status shouldBe Status.OK
+    val rd = result.json.as[Seq[RepaymentDetailData]]
+    rd shouldBe DesData.repaymentsDetail
+  }
+
+  "Get repayment data 404" in {
+    WireMockResponses.repaymentDetailsNotFound(vrn)
+    val result = connector.getRepaymentDetails(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
   }
 }

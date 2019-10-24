@@ -45,7 +45,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   def getFinancialData(vrn: Vrn): Future[FinancialData] = {
     Logger.debug(s"Calling des api 1166 for vrn ${vrn}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?onlyOpenItems=true"
+    val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC"
     Logger.debug(s"""Calling des api 1166 with url ${getFinancialURL}""")
     httpClient.GET[FinancialData](getFinancialURL)
   }

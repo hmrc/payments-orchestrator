@@ -31,17 +31,19 @@ object DesData {
   val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation))
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
   val directDebitDataNone: DirectDebitData = DirectDebitData(None)
-  val transaction: Transaction = Transaction("VAT Return Credit Charge", "18AC", "March 2018", LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), BigDecimal(5.56), BigDecimal(5.56))
+  val item = Item(Option(LocalDate.parse("2018-03-31")))
+  val transaction: Transaction = Transaction("VAT Return Credit Charge", "18AC", "March 2018",
+    LocalDate.parse("2018-03-01"), LocalDate.parse("2018-03-31"), BigDecimal(5.56), BigDecimal(5.56), Option(Seq(item)))
   val financialData: FinancialData = FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(transaction))
 
   val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
     LocalDate.parse("2001-01-01"),
-    LocalDate.parse("2001-01-01"),
-    LocalDate.parse("2001-01-01"),
+    Option(LocalDate.parse("2001-01-01")),
+    Option(LocalDate.parse("2001-01-01")),
     "18AC",
     "INITIAL",
-    1000,
-    1,
+    Option(BigDecimal(1000)),
+    Option(1),
     100.02
   )
 
@@ -123,7 +125,12 @@ object DesData {
                 "taxPeriodFrom":"2018-03-01",
                 "taxPeriodTo":"2018-03-31",
                 "originalAmount":5.56,
-                "outstandingAmount":5.56
+                "outstandingAmount":5.56,
+                "items": [
+                {
+                  "clearingDate":"2018-03-31"
+                }
+                ]
              }
           ]
        }
@@ -519,7 +526,8 @@ object DesData {
                                                                {
                                                                    "subItem": "000",
                                                                    "dueDate": "2018-08-24",
-                                                                   "amount": 5.56
+                                                                   "amount": 5.56,
+                                                                   "clearingDate": "2018-03-31"
                                                                }
                                                            ]
                                                        }

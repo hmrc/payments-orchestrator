@@ -42,7 +42,7 @@ object DesData {
     Option(LocalDate.parse("2001-01-01")),
     "18AC",
     "INITIAL",
-    Option(BigDecimal(1000)),
+    BigDecimal(1000),
     Option(1),
     100.02
   )

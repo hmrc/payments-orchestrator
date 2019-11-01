@@ -42,6 +42,9 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   private val desHeaderCarrier: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorizationToken")))
     .withExtraHeaders("Environment" -> serviceEnvironment)
 
+  private val desHeaderCarrier1533: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorizationToken")))
+    .withExtraHeaders("Environment" -> serviceEnvironment, "OriginatorID" -> "MDTP")
+
   def getFinancialData(vrn: Vrn): Future[FinancialData] = {
     Logger.debug(s"Calling des api 1166 for vrn ${vrn}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
@@ -68,7 +71,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
 
   def getRepaymentDetails(vrn: Vrn): Future[Seq[RepaymentDetailData]] = {
     Logger.debug(s"Calling des api 1533 for vrn ${vrn}")
-    implicit val hc: HeaderCarrier = desHeaderCarrier
+    implicit val hc: HeaderCarrier = desHeaderCarrier1533
     val getRDUrl: String = s"$serviceURL$repaymentDetailsUrl/${vrn.value}"
     Logger.debug(s"""Calling des api 1533 with url ${getRDUrl}""")
     httpClient.GET[Seq[RepaymentDetailData]](getRDUrl)

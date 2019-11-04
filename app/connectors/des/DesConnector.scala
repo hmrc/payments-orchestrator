@@ -16,6 +16,8 @@
 
 package connectors.des
 
+import java.time.LocalDate
+
 import javax.inject.{Inject, Singleton}
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
@@ -47,8 +49,10 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
 
   def getFinancialData(vrn: Vrn): Future[FinancialData] = {
     Logger.debug(s"Calling des api 1166 for vrn ${vrn}")
+    val now = LocalDate.now()
+    val aYearAgo = LocalDate.now().minusYears(1)
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC"
+    val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=${aYearAgo}&dateTo=${now}"
     Logger.debug(s"""Calling des api 1166 with url ${getFinancialURL}""")
     httpClient.GET[FinancialData](getFinancialURL)
   }

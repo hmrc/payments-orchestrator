@@ -16,8 +16,6 @@
 
 package model.des
 
-import java.time.LocalDate
-
 import play.api.libs.json.{Json, OFormat}
 
 /**
@@ -37,24 +35,9 @@ object FinancialData {
 }
 
 final case class Transaction(
-    chargeType:           String,
-    periodKey:            String,
-    periodKeyDescription: String,
-    taxPeriodFrom:        LocalDate,
-    taxPeriodTo:          LocalDate,
-    originalAmount:       BigDecimal,
-    outstandingAmount:    BigDecimal,
-    items:                Option[Seq[Item]] = None)
+    chargeType: String,
+    periodKey:  Option[String])
 
 object Transaction {
   implicit val format: OFormat[Transaction] = Json.format[Transaction]
 }
-
-final case class Item(
-    clearingDate: Option[LocalDate] = None
-)
-
-object Item {
-  implicit val format: OFormat[Item] = Json.format[Item]
-}
-

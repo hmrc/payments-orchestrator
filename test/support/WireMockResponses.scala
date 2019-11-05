@@ -31,6 +31,26 @@ object WireMockResponses {
 
   }
 
+  def financialsOkTRS(vrn: Vrn) = {
+    stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          DesData.financialDataOkTRS(vrn).toString()
+            .stripMargin)))
+
+  }
+
+  def financialDataOkTRS404(vrn: Vrn) = {
+    stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          DesData.financialDataOkTRS404(vrn).toString()
+            .stripMargin)))
+
+  }
+
   def financialsOkSingle(vrn: Vrn) = {
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()

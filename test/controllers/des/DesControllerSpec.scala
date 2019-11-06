@@ -54,6 +54,19 @@ class DesControllerSpec extends ItSpec {
     result.json.as[FinancialData].financialTransactions.size shouldBe 5
   }
 
+  "Get Financial data (financialsOkTRS)" in {
+    WireMockResponses.financialsOkTRS(vrn)
+    val result = connector.getFinancialData(vrn).futureValue
+    result.status shouldBe Status.OK
+    result.json.as[FinancialData].financialTransactions.size shouldBe 2
+  }
+
+  "Get Financial data (financialDataOkTRS404)" in {
+    WireMockResponses.financialDataOkTRS404(vrn)
+    val result = connector.getFinancialData(vrn).failed.futureValue
+    result.getMessage should include("returned 404 (Not Found)")
+  }
+
   "Get Financial data 404" in {
     WireMockResponses.financialsNotFound
     val result = connector.getFinancialData(vrn).failed.futureValue

@@ -18,7 +18,8 @@ package controllers.des
 
 import connectors.des.DesConnector
 import javax.inject.{Inject, Singleton}
-import model.Vrn
+import model.{ChargeType, Vrn}
+import model.des.Transaction
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
@@ -37,8 +38,19 @@ class DesController @Inject() (
   def getFinancialData(vrn: Vrn): Action[AnyContent] = Action.async { implicit request =>
     for {
       fd <- desConnector.getFinancialData(vrn)
-    } yield (Ok(Json.toJson(fd)))
+    } yield {
+
+      val filtered: Seq[Transaction] = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
+      if (filtered.size == 0) NotFound
+      else {
+        val newFd = fd.copy(financialTransactions = filtered)
+        Ok(Json.toJson(newFd))
+      }
+    }
+
   }
+
+  private def isCreditOrDebitChargeType(transaction: Transaction): Boolean = transaction.chargeType == ChargeType.vatReturnCreditCharge || transaction.chargeType == ChargeType.vatReturnDebitCharge
 
   def getCustomerData(vrn: Vrn): Action[AnyContent] = Action.async { implicit request =>
     for {

@@ -40,7 +40,7 @@ class DesController @Inject() (
       fd <- desConnector.getFinancialData(vrn)
     } yield {
 
-      val filtered: Seq[Transaction] = fd.financialTransactions.filter(f => (f.chargeType == "VAT Return Credit Charge" || f.chargeType == "VAT Return Debit Charge"))
+      val filtered: Seq[Transaction] = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
       if (filtered.size == 0) NotFound
       else {
         val newFd = fd.copy(financialTransactions = filtered)
@@ -49,6 +49,8 @@ class DesController @Inject() (
     }
 
   }
+
+  private def isCreditOrDebitChargeType(transaction: Transaction): Boolean = transaction.chargeType == "VAT Return Credit Charge" || transaction.chargeType == "VAT Return Debit Charge"
 
   def getCustomerData(vrn: Vrn): Action[AnyContent] = Action.async { implicit request =>
     for {

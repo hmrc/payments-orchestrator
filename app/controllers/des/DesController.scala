@@ -18,7 +18,7 @@ package controllers.des
 
 import connectors.des.DesConnector
 import javax.inject.{Inject, Singleton}
-import model.Vrn
+import model.{ChargeType, Vrn}
 import model.des.Transaction
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -50,7 +50,7 @@ class DesController @Inject() (
 
   }
 
-  private def isCreditOrDebitChargeType(transaction: Transaction): Boolean = transaction.chargeType == "VAT Return Credit Charge" || transaction.chargeType == "VAT Return Debit Charge"
+  private def isCreditOrDebitChargeType(transaction: Transaction): Boolean = transaction.chargeType == ChargeType.vatReturnCreditCharge || transaction.chargeType == ChargeType.vatReturnDebitCharge
 
   def getCustomerData(vrn: Vrn): Action[AnyContent] = Action.async { implicit request =>
     for {

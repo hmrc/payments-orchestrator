@@ -16,18 +16,20 @@
 
 package controllers.des
 
-import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
+import model.{EnrolmentKeys, Vrn}
 import play.api.Logger
 import play.api.http.Status
-import support.{DesData, ItSpec, WireMockResponses}
+import support.{AuthWireMockResponses, DesData, ItSpec, WireMockResponses}
 
 class DesControllerSpec extends ItSpec {
 
   val desController = injector.instanceOf[DesController]
   val vrn: Vrn = Vrn("2345678890")
+  val vrnFailed: Vrn = Vrn("2345678891")
 
   "Get Customer Information" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.customerDataOkWithBankDetails(vrn)
     val result = connector.getCustomerData(vrn).futureValue
     result.status shouldBe Status.OK
@@ -35,12 +37,14 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get Customer Information 404" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.customerNotFound(vrn)
     val result = connector.getCustomerData(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
   }
 
   "Get Financial data" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.financialsOkSingle(vrn)
     val result = connector.getFinancialData(vrn).futureValue
     result.status shouldBe Status.OK
@@ -48,6 +52,7 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get Financial data (multiple)" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.financialsOkMultiple(vrn)
     val result = connector.getFinancialData(vrn).futureValue
     result.status shouldBe Status.OK
@@ -55,6 +60,7 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get Financial data (financialsOkTRS)" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.financialsOkTRS(vrn)
     val result = connector.getFinancialData(vrn).futureValue
     result.status shouldBe Status.OK
@@ -62,18 +68,21 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get Financial data (financialDataOkTRS404)" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.financialDataOkTRS404(vrn)
     val result = connector.getFinancialData(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
   }
 
   "Get Financial data 404" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.financialsNotFound
     val result = connector.getFinancialData(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
   }
 
   "Get DD data" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.ddOk(vrn)
     val result = connector.getDDData(vrn).futureValue
     result.status shouldBe Status.OK
@@ -82,6 +91,7 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get DD data no mandate" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.ddOkNoMandate(vrn)
     val result = connector.getDDData(vrn).futureValue
     result.status shouldBe Status.OK
@@ -90,12 +100,14 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get DD data 404" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.ddNotFound(vrn)
     val result = connector.getDDData(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
   }
 
   "Get repayment data" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.repaymentDetailsOk(vrn)
     val result = connector.getRepaymentDetails(vrn).futureValue
     result.status shouldBe Status.OK
@@ -104,8 +116,30 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get repayment data 404" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     WireMockResponses.repaymentDetailsNotFound(vrn)
     val result = connector.getRepaymentDetails(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
+  }
+
+  "Get repayment data, not authorised should result in 401" in {
+    AuthWireMockResponses.authFailed
+    WireMockResponses.repaymentDetailsOk(vrn)
+    val result = connector.getRepaymentDetails(vrn).failed.futureValue
+    result.getMessage should include("Session record not found")
+  }
+
+  "Get repayment data, logged in but no access to VRN" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrnFailed, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
+    WireMockResponses.repaymentDetailsOk(vrn)
+    val result = connector.getRepaymentDetails(vrn).failed.futureValue
+    result.getMessage should include("You do not have access to this vrn: 2345678890")
+  }
+
+  "Get repayment data, logged in but no enrolments" in {
+    AuthWireMockResponses.authOkNoEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString)
+    WireMockResponses.repaymentDetailsOk(vrn)
+    val result = connector.getRepaymentDetails(vrn).failed.futureValue
+    result.getMessage should include("You do not have access to this service")
   }
 }

@@ -30,19 +30,19 @@ class CustomerInformationSpec extends UnitSpec {
   }
 
   "bank details change Indicator exist" in {
-    DesData.customerInformation.bankDetailsChangeIndicatorExists shouldBe true
+    DesData.customerInformation.bankDetailsChangeIndicatorExists shouldBe Some(true)
   }
 
   "PPOB change Indicator not exist" in {
-    DesData.customerInformation.PPOBDetailsChangeIndicatorExists shouldBe false
+    DesData.customerInformation.PPOBDetailsChangeIndicatorExists shouldBe Some(false)
   }
 
   "bank details change Indicator not exist as None" in {
-    DesData.approvedCustomerInformation.bankDetailsChangeIndicatorExists shouldBe false
+    DesData.approvedCustomerInformation.bankDetailsChangeIndicatorExists shouldBe None
   }
 
   "PPOB change Indicator not exist as None" in {
-    DesData.approvedCustomerInformation.PPOBDetailsChangeIndicatorExists shouldBe false
+    DesData.approvedCustomerInformation.PPOBDetailsChangeIndicatorExists shouldBe None
   }
 
 }

@@ -22,27 +22,23 @@ final case class CustomerInformation(approvedInformation: Option[ApprovedInforma
   val approvedInformationExists = approvedInformation.isDefined
   val inFlightInformationExists = inFlightInformation.isDefined
 
-  val bankDetailsChangeIndicatorExists = inFlightInformation match {
-    case Some(customerInfo) => customerInfo.changeIndicators match {
-      case Some(chngInd) => chngInd.bankDetails match {
-        case Some(bank) => bank
-        case None       => false
-      }
-      case None => false
-    }
-    case None => false
+  val bankDetailsChangeIndicatorExists: Option[Boolean] = {
+    for {
+      inflight <- inFlightInformation
+      changeIndicators <- inflight.changeIndicators
+      bankDetails <- changeIndicators.bankDetails
+    } yield bankDetails
+
   }
 
-  val PPOBDetailsChangeIndicatorExists = inFlightInformation match {
-    case Some(customerInfo) => customerInfo.changeIndicators match {
-      case Some(chngInd) => chngInd.PPOBDetails match {
-        case Some(ppob) => ppob
-        case None       => false
-      }
-      case None => false
-    }
-    case None => false
+  val PPOBDetailsChangeIndicatorExists: Option[Boolean] = {
+    for {
+      inflight <- inFlightInformation
+      changeIndicators <- inflight.changeIndicators
+      pPOBDetails <- changeIndicators.PPOBDetails
+    } yield pPOBDetails
   }
+
 }
 
 object CustomerInformation {

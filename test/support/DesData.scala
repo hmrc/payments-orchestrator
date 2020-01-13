@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,13 @@ object DesData {
   val address: Address = Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))
   val ppob: PPOB = PPOB(Some(address))
   val approvedInformation = ApprovedInformation(Some(bankDetails), Some(ppob))
-  val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation))
+  val changeIndicators = ChangeIndicators(Some(true), Some(false))
+  val inFlightInformation = InFlightInformation(Some(changeIndicators))
+
+  val approvedCustomerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation), None)
+
+  val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation), Some(inFlightInformation))
+
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
   val directDebitDataNone: DirectDebitData = DirectDebitData(None)
   val transaction: Transaction = Transaction("VAT Return Credit Charge", Option("18AC"))

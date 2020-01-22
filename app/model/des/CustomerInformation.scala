@@ -60,13 +60,25 @@ object ChangeIndicators {
 }
 
 final case class ApprovedInformation(
-    bankDetails: Option[BankDetails],
-    PPOB:        Option[PPOB]
+    customerDetails: Option[CustomerDetails],
+    bankDetails:     Option[BankDetails],
+    PPOB:            Option[PPOB]
 )
 
 object ApprovedInformation {
 
   implicit val format: OFormat[ApprovedInformation] = Json.format[ApprovedInformation]
+}
+
+final case class CustomerDetails(
+    welshIndicator:     Option[Boolean],
+    isPartialMigration: Option[Boolean]
+)
+
+object CustomerDetails {
+
+  implicit val format: OFormat[CustomerDetails] = Json.format[CustomerDetails]
+
 }
 
 final case class PPOB(address: Option[Address])

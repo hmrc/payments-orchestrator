@@ -5,13 +5,13 @@ object AppDependencies {
 
   val compile = Seq(
 
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.1.0",
-    "uk.gov.hmrc" %% "auth-client" % "2.31.0-play-26"
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.8.0",
+    "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-26"
     
   )
 
   val test = Seq(
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.0.0" % Test classifier "tests",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.8.0" % Test classifier "tests",
     "org.scalatest" %% "scalatest" % "3.0.8" % Test,
     "org.jsoup" % "jsoup" % "1.10.2" % Test,
     "com.typesafe.play" %% "play-test" % current % Test,

@@ -19,9 +19,12 @@ package support
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model.Vrn
+import support.DesData.vrn
+import support.WireMockSupport.wireMockBaseUrlAsString
 
-object AuthWireMockResponses {
+object AuthStub {
   private val oid: String = "556737e15500005500eaf68f"
 
   private val headers = new HttpHeaders(new HttpHeader("WWW-Authenticate", "MDTP detail=\"SessionRecordNotFound\""))
@@ -32,7 +35,7 @@ object AuthWireMockResponses {
         .withStatus(401)
         .withHeaders(headers)))
 
-  def authOkNoEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String): StubMapping =
+  def authOkNoEnrolments(): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(200)
@@ -56,12 +59,12 @@ object AuthWireMockResponses {
                "levelOfAssurance":"1",
                "previouslyLoggedInAt":"2016-06-20T09:48:37.112Z",
                "groupIdentifier": "groupId",
-               "affinityGroup": "$affinityGroup",
+               "affinityGroup": "Individual",
                "allEnrolments": []
              }
        """.stripMargin)))
 
-  def authOkWithEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String, vrn: Vrn, enrolment: String): StubMapping =
+  def authOkWithEnrolments(vrn: Vrn = vrn, enrolment: String = mtdVatEnrolmentKey): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(200)
@@ -85,7 +88,7 @@ object AuthWireMockResponses {
                "levelOfAssurance":"1",
                "previouslyLoggedInAt":"2016-06-20T09:48:37.112Z",
                "groupIdentifier": "groupId",
-               "affinityGroup": "$affinityGroup",
+               "affinityGroup": "Individual",
                "allEnrolments": [
                         {
                           "key": "$enrolment",

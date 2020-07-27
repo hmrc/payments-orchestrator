@@ -23,6 +23,7 @@ import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import play.api.{Configuration, Logger}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient

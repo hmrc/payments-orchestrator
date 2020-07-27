@@ -18,6 +18,7 @@ package support
 
 import javax.inject.{Inject, Singleton}
 import model.Vrn
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 

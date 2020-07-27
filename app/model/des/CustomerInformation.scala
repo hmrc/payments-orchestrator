@@ -19,35 +19,26 @@ package model.des
 import play.api.libs.json._
 
 final case class CustomerInformation(approvedInformation: Option[ApprovedInformation], inFlightInformation: Option[InFlightInformation]) {
-  val approvedInformationExists = approvedInformation.isDefined
-  val inFlightInformationExists = inFlightInformation.isDefined
-
-  val bankDetailsChangeIndicatorExists: Option[Boolean] = {
+  val bankDetailsChangeIndicatorExists: Option[Boolean] =
     for {
       inflight <- inFlightInformation
       changeIndicators <- inflight.changeIndicators
       bankDetails <- changeIndicators.bankDetails
     } yield bankDetails
 
-  }
-
-  val PPOBDetailsChangeIndicatorExists: Option[Boolean] = {
+  val PPOBDetailsChangeIndicatorExists: Option[Boolean] =
     for {
       inflight <- inFlightInformation
       changeIndicators <- inflight.changeIndicators
       pPOBDetails <- changeIndicators.PPOBDetails
     } yield pPOBDetails
-  }
-
 }
 
 object CustomerInformation {
   implicit val format: OFormat[CustomerInformation] = Json.format[CustomerInformation]
 }
 
-final case class InFlightInformation(
-    changeIndicators: Option[ChangeIndicators]
-)
+final case class InFlightInformation(changeIndicators: Option[ChangeIndicators])
 
 object InFlightInformation {
   implicit val format: OFormat[InFlightInformation] = Json.format[InFlightInformation]
@@ -59,26 +50,16 @@ object ChangeIndicators {
   implicit val format: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
 }
 
-final case class ApprovedInformation(
-    customerDetails: Option[CustomerDetails],
-    bankDetails:     Option[BankDetails],
-    PPOB:            Option[PPOB]
-)
+final case class ApprovedInformation(customerDetails: Option[CustomerDetails], bankDetails: Option[BankDetails], PPOB: Option[PPOB])
 
 object ApprovedInformation {
-
   implicit val format: OFormat[ApprovedInformation] = Json.format[ApprovedInformation]
 }
 
-final case class CustomerDetails(
-    welshIndicator:     Option[Boolean],
-    isPartialMigration: Option[Boolean]
-)
+final case class CustomerDetails(welshIndicator: Option[Boolean], isPartialMigration: Option[Boolean])
 
 object CustomerDetails {
-
   implicit val format: OFormat[CustomerDetails] = Json.format[CustomerDetails]
-
 }
 
 final case class PPOB(address: Option[Address])
@@ -100,11 +81,7 @@ object Address {
   implicit val format: OFormat[Address] = Json.format[Address]
 }
 
-final case class BankDetails(
-    accountHolderName: Option[String],
-    bankAccountNumber: Option[String],
-    sortCode:          Option[String]
-)
+final case class BankDetails(accountHolderName: Option[String], bankAccountNumber: Option[String], sortCode: Option[String])
 
 object BankDetails {
   implicit val format: OFormat[BankDetails] = Json.format[BankDetails]

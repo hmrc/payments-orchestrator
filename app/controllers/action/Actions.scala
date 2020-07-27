@@ -20,32 +20,23 @@ import com.google.inject.Inject
 import model.Vrn
 import play.api.Logger
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Actions @Inject() (
-    authoriseAction:      AuthenticatedAction,
-    af:                   AuthorisedFunctions,
-    cc:                   ControllerComponents,
-    unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
-
+class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
   def securedAction(vrn: Vrn): ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction andThen validateVrn(vrn)
 
   private def validateVrn(vrn: Vrn): ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] =
     new ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] {
-
-      override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
-
+      override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
         vrnCheck(request, vrn)
-      }
 
       override protected def executionContext: ExecutionContext = ec
     }
 
-  private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] = {
+  private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] =
     request.enrolmentsVrn match {
-      case Some(typedVrn) => {
+      case Some(typedVrn) =>
         if (typedVrn.vrn.value == vrn.value) {
           Future.successful(Right(request))
         } else {
@@ -53,13 +44,9 @@ class Actions @Inject() (
           implicit val req: AuthenticatedRequest[_] = request
           Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
         }
-      }
-      case None => {
+      case None =>
         Logger.debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
         implicit val req: AuthenticatedRequest[_] = request
         Future.successful(Left(unhappyPathResponses.unauthorised))
-      }
     }
-  }
-
 }

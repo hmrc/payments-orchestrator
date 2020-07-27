@@ -23,26 +23,25 @@ import model.des.{DirectDebitDetails, _}
 import play.api.libs.json.{JsValue, Json}
 
 object DesData {
+  val vrn: Vrn = Vrn("2345678890")
 
-  val bankDetails: BankDetails = BankDetails(Some("Account holder"), Some("11112222"), Some("667788"))
-  val address: Address = Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))
-  val ppob: PPOB = PPOB(Some(address))
-
-  val customerDetails: CustomerDetails = CustomerDetails(Some(true), Some(false))
-  val approvedInformation = ApprovedInformation(Some(customerDetails), Some(bankDetails), Some(ppob))
-  val changeIndicators = ChangeIndicators(Some(true), Some(false))
-  val inFlightInformation = InFlightInformation(Some(changeIndicators))
+  private val approvedInformation =
+    ApprovedInformation(
+      Some(CustomerDetails(Some(true), Some(false))),
+      Some(BankDetails(Some("Account holder"), Some("11112222"), Some("667788"))),
+      Some(PPOB(Some(Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))))))
 
   val approvedCustomerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation), None)
 
-  val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation), Some(inFlightInformation))
+  val customerInformation: CustomerInformation =
+    CustomerInformation(Some(approvedInformation), Some(InFlightInformation(Some(ChangeIndicators(Some(true), Some(false))))))
 
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
-  val directDebitDataNone: DirectDebitData = DirectDebitData(None)
-  val transaction: Transaction = Transaction("VAT Return Credit Charge", Option("18AC"))
-  val financialData: FinancialData = FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(transaction))
 
-  val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
+  val financialData: FinancialData =
+    FinancialData("VRN", vrn.value, "VATC", "2019-08-20T10:44:05Z", Seq(Transaction("VAT Return Credit Charge", Option("18AC"))))
+
+  val repaymentsDetail: Seq[RepaymentDetailData] = Seq(RepaymentDetailData(
     LocalDate.parse("2001-01-01"),
     Option(LocalDate.parse("2001-01-01")),
     Option(LocalDate.parse("2001-01-01")),
@@ -51,9 +50,7 @@ object DesData {
     BigDecimal(1000),
     Option(1),
     100.02
-  )
-
-  val repaymentsDetail: Seq[RepaymentDetailData] = Seq(repaymentDetail)
+  ))
 
   //language=JSON
   val repaymentDetailJson: JsValue = Json.parse(
@@ -66,30 +63,28 @@ object DesData {
         "vatToPay_BOX5": 1000,
         "supplementDelayDays": 1,
         "originalPostingAmount": 100.02
-    }]
-""".stripMargin
+    }]""".stripMargin
   )
 
   //language=JSON
   val repaymentDetailsNotFound: JsValue = Json.parse(
     s"""{
-   "code": "NOT_FOUND",
-   "reason": "The remote endpoint has indicated that no data can be found"}
-""".stripMargin
+          "code": "NOT_FOUND",
+          "reason": "The remote endpoint has indicated that no data can be found"
+        }""".stripMargin
   )
 
   //language=JSON
   val directDebitDataJson: JsValue = Json.parse(
     s"""{
-        "directDebitDetails": [
-                     {
-                          "accountHolderName": "Tester Surname",
-                         "sortCode": "404784",
-                         "accountNumber": "70872490"
-                      }
-                  ]
-                  }
-       """.stripMargin)
+          "directDebitDetails": [
+             {
+                  "accountHolderName": "Tester Surname",
+                 "sortCode": "404784",
+                 "accountNumber": "70872490"
+              }
+          ]
+        }""".stripMargin)
 
   //language=JSON
   val approvedInformationJson: JsValue = Json.parse(
@@ -116,15 +111,14 @@ object DesData {
                 }
              }
           }
-       }
-     """.stripMargin)
+       }""".stripMargin)
 
   //language=JSON
   val financialDataJson: JsValue = Json.parse(
     s"""
        {
           "idType":"VRN",
-          "idNumber":"2345678890",
+          "idNumber":"${vrn.value}",
           "regimeType":"VATC",
           "processingDate":"2019-08-20T10:44:05Z",
           "financialTransactions":[
@@ -140,11 +134,11 @@ object DesData {
   //language=JSON
   val customerDataNotFound: JsValue = Json.parse(
     s"""
-                                                   {
-                                                       "code": "NOT_FOUND",
-                                                       "reason": "The back end has indicated that No subscription can be found."
-                                                   }
-       """.stripMargin)
+       {
+           "code": "NOT_FOUND",
+           "reason": "The back end has indicated that No subscription can be found."
+       }
+    """.stripMargin)
 
   // language=JSON
   val customerDataOk: JsValue = Json.parse(
@@ -238,8 +232,7 @@ object DesData {
                  }
              }
          }
-     }
-       """.stripMargin)
+     }""".stripMargin)
 
   //language=JSON
   val customerDataOkWithoutBankDetails: JsValue = Json.parse(
@@ -328,218 +321,210 @@ object DesData {
                  }
              }
          }
-     }
-       """.stripMargin)
+     }""".stripMargin)
 
   //language=JSON
   val financialDataNotFound: JsValue = Json.parse(
-    s"""
-                                                     {
-                                                        "code": "NOT_FOUND",
-                                                        "reason": "The remote endpoint has indicated that no data can be found."
-                                                    }
-       """.stripMargin)
+    s"""{
+          "code": "NOT_FOUND",
+          "reason": "The remote endpoint has indicated that no data can be found."
+        }""".stripMargin)
 
   //language=JSON
   def financialDataOk(vrn: Vrn): JsValue = Json.parse(
-    s"""
-                                                 {
-                                                   "idType": "VRN",
-                                                   "idNumber": "${vrn.value}",
-                                                   "regimeType": "VATC",
-                                                   "processingDate": "2019-08-20T10:44:05Z",
-                                                   "financialTransactions": [
-                                                       {
-                                                           "chargeType": "VAT Return Credit Charge",
-                                                           "mainType": "VAT Protective Assessment",
-                                                           "periodKey": "18AC",
-                                                           "periodKeyDescription": "March 2018",
-                                                           "taxPeriodFrom": "2018-03-01",
-                                                           "taxPeriodTo": "2018-03-31",
-                                                           "businessPartner": "0100113120",
-                                                           "contractAccountCategory": "33",
-                                                           "contractAccount": "091700000405",
-                                                           "contractObjectType": "ZVAT",
-                                                           "contractObject": "00000180000000000165",
-                                                           "sapDocumentNumber": "002720000571",
-                                                           "sapDocumentNumberItem": "0001",
-                                                           "chargeReference": "XB002616013425",
-                                                           "mainTransaction": "4733",
-                                                           "subTransaction": "1174",
-                                                           "originalAmount": 796.0,
-                                                           "outstandingAmount": 796.0,
-                                                           "accruedInterest": 24.23,
-                                                           "items": [
-                                                               {
-                                                                   "subItem": "000",
-                                                                   "dueDate": "2018-09-12",
-                                                                   "amount": 796.0
-                                                               }
-                                                           ]
-                                                       },
-                                                       {
-                                                           "chargeType": "VAT Return Credit Charge",
-                                                           "mainType": "VAT PA Default Interest",
-                                                           "periodKey": "18AC",
-                                                           "periodKeyDescription": "March 2018",
-                                                           "taxPeriodFrom": "2018-03-01",
-                                                           "taxPeriodTo": "2018-03-31",
-                                                           "businessPartner": "0100113120",
-                                                           "contractAccountCategory": "33",
-                                                           "contractAccount": "091700000405",
-                                                           "contractObjectType": "ZVAT",
-                                                           "contractObject": "00000180000000000165",
-                                                           "sapDocumentNumber": "002720000571",
-                                                           "sapDocumentNumberItem": "0002",
-                                                           "chargeReference": "XB002616013425",
-                                                           "mainTransaction": "4708",
-                                                           "subTransaction": "1175",
-                                                           "originalAmount": 3.59,
-                                                           "outstandingAmount": 3.59,
-                                                           "items": [
-                                                               {
-                                                                   "subItem": "000",
-                                                                   "dueDate": "2018-08-13",
-                                                                   "amount": 3.59
-                                                               }
-                                                           ]
-                                                       },
-                                                       {
-                                                           "chargeType": "VAT Return Credit Charge",
-                                                           "mainType": "VAT Return Charge",
-                                                           "periodKey": "18AC",
-                                                           "periodKeyDescription": "March 2018",
-                                                           "taxPeriodFrom": "2018-03-01",
-                                                           "taxPeriodTo": "2018-03-31",
-                                                           "businessPartner": "0100113120",
-                                                           "contractAccountCategory": "33",
-                                                           "contractAccount": "091700000405",
-                                                           "contractObjectType": "ZVAT",
-                                                           "contractObject": "00000180000000000165",
-                                                           "sapDocumentNumber": "003030001189",
-                                                           "sapDocumentNumberItem": "0001",
-                                                           "chargeReference": "XJ002610110056",
-                                                           "mainTransaction": "4700",
-                                                           "subTransaction": "1174",
-                                                           "originalAmount": 10169.45,
-                                                           "outstandingAmount": 10169.45,
-                                                           "items": [
-                                                               {
-                                                                   "subItem": "001",
-                                                                   "dueDate": "2018-05-07",
-                                                                   "amount": 135.0
-                                                               },
-                                                               {
-                                                                   "subItem": "000",
-                                                                   "dueDate": "2018-05-07",
-                                                                   "amount": 10034.45
-                                                               }
-                                                           ]
-                                                       },
-                                                       {
-                                                           "chargeType": "VAT Return Credit Charge",
-                                                           "mainType": "VAT Protective Assessment",
-                                                           "periodKey": "18AC",
-                                                           "periodKeyDescription": "March 2018",
-                                                           "taxPeriodFrom": "2018-03-01",
-                                                           "taxPeriodTo": "2018-03-31",
-                                                           "businessPartner": "0100113120",
-                                                           "contractAccountCategory": "33",
-                                                           "contractAccount": "091700000405",
-                                                           "contractObjectType": "ZVAT",
-                                                           "contractObject": "00000180000000000165",
-                                                           "sapDocumentNumber": "003360001206",
-                                                           "sapDocumentNumberItem": "0001",
-                                                           "chargeReference": "XV002616013469",
-                                                           "mainTransaction": "4733",
-                                                           "subTransaction": "1174",
-                                                           "originalAmount": 796.0,
-                                                           "outstandingAmount": 796.0,
-                                                           "accruedInterest": 23.45,
-                                                           "items": [
-                                                               {
-                                                                   "subItem": "000",
-                                                                   "dueDate": "2018-09-23",
-                                                                   "amount": 796.0
-                                                               }
-                                                           ]
-                                                       },
-                                                       {
-                                                           "chargeType": "VAT Return Credit Charge",
-                                                           "mainType": "VAT PA Default Interest",
-                                                           "periodKey": "18AC",
-                                                           "periodKeyDescription": "March 2018",
-                                                           "taxPeriodFrom": "2018-03-01",
-                                                           "taxPeriodTo": "2018-03-31",
-                                                           "businessPartner": "0100113120",
-                                                           "contractAccountCategory": "33",
-                                                           "contractAccount": "091700000405",
-                                                           "contractObjectType": "ZVAT",
-                                                           "contractObject": "00000180000000000165",
-                                                           "sapDocumentNumber": "003360001206",
-                                                           "sapDocumentNumberItem": "0002",
-                                                           "chargeReference": "XV002616013469",
-                                                           "mainTransaction": "4708",
-                                                           "subTransaction": "1175",
-                                                           "originalAmount": 5.56,
-                                                           "outstandingAmount": 5.56,
-                                                           "items": [
-                                                               {
-                                                                   "subItem": "000",
-                                                                   "dueDate": "2018-08-24",
-                                                                   "amount": 5.56
-                                                               }
-                                                           ]
-                                                       }
-                                                   ]
-                                               }
-       """.stripMargin)
+    s"""{
+           "idType": "VRN",
+           "idNumber": "${vrn.value}",
+           "regimeType": "VATC",
+           "processingDate": "2019-08-20T10:44:05Z",
+           "financialTransactions": [
+               {
+                   "chargeType": "VAT Return Credit Charge",
+                   "mainType": "VAT Protective Assessment",
+                   "periodKey": "18AC",
+                   "periodKeyDescription": "March 2018",
+                   "taxPeriodFrom": "2018-03-01",
+                   "taxPeriodTo": "2018-03-31",
+                   "businessPartner": "0100113120",
+                   "contractAccountCategory": "33",
+                   "contractAccount": "091700000405",
+                   "contractObjectType": "ZVAT",
+                   "contractObject": "00000180000000000165",
+                   "sapDocumentNumber": "002720000571",
+                   "sapDocumentNumberItem": "0001",
+                   "chargeReference": "XB002616013425",
+                   "mainTransaction": "4733",
+                   "subTransaction": "1174",
+                   "originalAmount": 796.0,
+                   "outstandingAmount": 796.0,
+                   "accruedInterest": 24.23,
+                   "items": [
+                       {
+                           "subItem": "000",
+                           "dueDate": "2018-09-12",
+                           "amount": 796.0
+                       }
+                   ]
+               },
+               {
+                   "chargeType": "VAT Return Credit Charge",
+                   "mainType": "VAT PA Default Interest",
+                   "periodKey": "18AC",
+                   "periodKeyDescription": "March 2018",
+                   "taxPeriodFrom": "2018-03-01",
+                   "taxPeriodTo": "2018-03-31",
+                   "businessPartner": "0100113120",
+                   "contractAccountCategory": "33",
+                   "contractAccount": "091700000405",
+                   "contractObjectType": "ZVAT",
+                   "contractObject": "00000180000000000165",
+                   "sapDocumentNumber": "002720000571",
+                   "sapDocumentNumberItem": "0002",
+                   "chargeReference": "XB002616013425",
+                   "mainTransaction": "4708",
+                   "subTransaction": "1175",
+                   "originalAmount": 3.59,
+                   "outstandingAmount": 3.59,
+                   "items": [
+                       {
+                           "subItem": "000",
+                           "dueDate": "2018-08-13",
+                           "amount": 3.59
+                       }
+                   ]
+               },
+               {
+                   "chargeType": "VAT Return Credit Charge",
+                   "mainType": "VAT Return Charge",
+                   "periodKey": "18AC",
+                   "periodKeyDescription": "March 2018",
+                   "taxPeriodFrom": "2018-03-01",
+                   "taxPeriodTo": "2018-03-31",
+                   "businessPartner": "0100113120",
+                   "contractAccountCategory": "33",
+                   "contractAccount": "091700000405",
+                   "contractObjectType": "ZVAT",
+                   "contractObject": "00000180000000000165",
+                   "sapDocumentNumber": "003030001189",
+                   "sapDocumentNumberItem": "0001",
+                   "chargeReference": "XJ002610110056",
+                   "mainTransaction": "4700",
+                   "subTransaction": "1174",
+                   "originalAmount": 10169.45,
+                   "outstandingAmount": 10169.45,
+                   "items": [
+                       {
+                           "subItem": "001",
+                           "dueDate": "2018-05-07",
+                           "amount": 135.0
+                       },
+                       {
+                           "subItem": "000",
+                           "dueDate": "2018-05-07",
+                           "amount": 10034.45
+                       }
+                   ]
+               },
+               {
+                   "chargeType": "VAT Return Credit Charge",
+                   "mainType": "VAT Protective Assessment",
+                   "periodKey": "18AC",
+                   "periodKeyDescription": "March 2018",
+                   "taxPeriodFrom": "2018-03-01",
+                   "taxPeriodTo": "2018-03-31",
+                   "businessPartner": "0100113120",
+                   "contractAccountCategory": "33",
+                   "contractAccount": "091700000405",
+                   "contractObjectType": "ZVAT",
+                   "contractObject": "00000180000000000165",
+                   "sapDocumentNumber": "003360001206",
+                   "sapDocumentNumberItem": "0001",
+                   "chargeReference": "XV002616013469",
+                   "mainTransaction": "4733",
+                   "subTransaction": "1174",
+                   "originalAmount": 796.0,
+                   "outstandingAmount": 796.0,
+                   "accruedInterest": 23.45,
+                   "items": [
+                       {
+                           "subItem": "000",
+                           "dueDate": "2018-09-23",
+                           "amount": 796.0
+                       }
+                   ]
+               },
+               {
+                   "chargeType": "VAT Return Credit Charge",
+                   "mainType": "VAT PA Default Interest",
+                   "periodKey": "18AC",
+                   "periodKeyDescription": "March 2018",
+                   "taxPeriodFrom": "2018-03-01",
+                   "taxPeriodTo": "2018-03-31",
+                   "businessPartner": "0100113120",
+                   "contractAccountCategory": "33",
+                   "contractAccount": "091700000405",
+                   "contractObjectType": "ZVAT",
+                   "contractObject": "00000180000000000165",
+                   "sapDocumentNumber": "003360001206",
+                   "sapDocumentNumberItem": "0002",
+                   "chargeReference": "XV002616013469",
+                   "mainTransaction": "4708",
+                   "subTransaction": "1175",
+                   "originalAmount": 5.56,
+                   "outstandingAmount": 5.56,
+                   "items": [
+                       {
+                           "subItem": "000",
+                           "dueDate": "2018-08-24",
+                           "amount": 5.56
+                       }
+                   ]
+               }
+           ]
+       }""".stripMargin)
 
   //language=JSON
   def financialDataSingleOk(vrn: Vrn): JsValue = Json.parse(
-    s"""
-                                                 {
-                                                   "idType": "VRN",
-                                                   "idNumber": "${vrn.value}",
-                                                   "regimeType": "VATC",
-                                                   "processingDate": "2019-08-20T10:44:05Z",
-                                                   "financialTransactions": [
-                                                       {
-                                                           "chargeType": "VAT Return Credit Charge",
-                                                           "mainType": "VAT PA Default Interest",
-                                                           "periodKey": "18AC",
-                                                           "periodKeyDescription": "March 2018",
-                                                           "taxPeriodFrom": "2018-03-01",
-                                                           "taxPeriodTo": "2018-03-31",
-                                                           "businessPartner": "0100113120",
-                                                           "contractAccountCategory": "33",
-                                                           "contractAccount": "091700000405",
-                                                           "contractObjectType": "ZVAT",
-                                                           "contractObject": "00000180000000000165",
-                                                           "sapDocumentNumber": "003360001206",
-                                                           "sapDocumentNumberItem": "0002",
-                                                           "chargeReference": "XV002616013469",
-                                                           "mainTransaction": "4708",
-                                                           "subTransaction": "1175",
-                                                           "originalAmount": 5.56,
-                                                           "outstandingAmount": 5.56,
-                                                           "items": [
-                                                               {
-                                                                   "subItem": "000",
-                                                                   "dueDate": "2018-08-24",
-                                                                   "amount": 5.56,
-                                                                   "clearingDate": "2018-03-31"
-                                                               }
-                                                           ]
-                                                       }
-                                                   ]
-                                               }
-       """.stripMargin)
+    s"""{
+           "idType": "VRN",
+           "idNumber": "${vrn.value}",
+           "regimeType": "VATC",
+           "processingDate": "2019-08-20T10:44:05Z",
+           "financialTransactions": [
+               {
+                   "chargeType": "VAT Return Credit Charge",
+                   "mainType": "VAT PA Default Interest",
+                   "periodKey": "18AC",
+                   "periodKeyDescription": "March 2018",
+                   "taxPeriodFrom": "2018-03-01",
+                   "taxPeriodTo": "2018-03-31",
+                   "businessPartner": "0100113120",
+                   "contractAccountCategory": "33",
+                   "contractAccount": "091700000405",
+                   "contractObjectType": "ZVAT",
+                   "contractObject": "00000180000000000165",
+                   "sapDocumentNumber": "003360001206",
+                   "sapDocumentNumberItem": "0002",
+                   "chargeReference": "XV002616013469",
+                   "mainTransaction": "4708",
+                   "subTransaction": "1175",
+                   "originalAmount": 5.56,
+                   "outstandingAmount": 5.56,
+                   "items": [
+                       {
+                           "subItem": "000",
+                           "dueDate": "2018-08-24",
+                           "amount": 5.56,
+                           "clearingDate": "2018-03-31"
+                       }
+                   ]
+               }
+           ]
+       }""".stripMargin)
 
   //language=JSON
   def ddOk: JsValue = Json.parse(
-    s"""
-       {
+    s"""{
            "directDebitMandateFound": true,
            "directDebitDetails": [
                {
@@ -551,353 +536,347 @@ object DesData {
                    "accountNumber": "70872490"
                }
            ]
-       }
-       """.stripMargin)
+       }""".stripMargin)
 
   //language=JSON
   val ddNotFound: JsValue = Json.parse(
-    s"""
-                                                     {
-                                                        "code": "NOT_FOUND",
-                                                        "reason": "The back end has indicated that there is no match found for the given identifier"
-                                                    }
-       """.stripMargin)
+    s"""{
+            "code": "NOT_FOUND",
+            "reason": "The back end has indicated that there is no match found for the given identifier"
+        }""".stripMargin)
 
   //language=JSON
   val ddOkNoMandate: JsValue = Json.parse(
-    s"""
-       {
-     "directDebitMandateFound": false
-      }
-           """.stripMargin)
+    s"""{
+            "directDebitMandateFound": false
+         }""".stripMargin)
 
   //language=JSON
   def financialDataOkTRS(vrn: Vrn): JsValue = Json.parse(
     s"""{
-   "idType":"VRN",
-   "idNumber":"${vrn.value}",
-   "regimeType":"VATC",
-   "processingDate":"2019-11-05T10:35:24Z",
-   "financialTransactions":[
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"002850000401",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-4500.0,
-         "clearedAmount":-4500.0,
-         "items":[
+         "idType":"VRN",
+         "idNumber":"${vrn.value}",
+         "regimeType":"VATC",
+         "processingDate":"2019-11-05T10:35:24Z",
+         "financialTransactions":[
             {
-               "subItem":"000",
-               "dueDate":"2019-05-10",
-               "amount":-4500.0,
-               "clearingDate":"2019-05-10",
-               "clearingReason":"Allocated to Charge",
-               "paymentLock":"Re-Check Payment method - Unsu",
-               "paymentReference":"XG002610131772",
-               "paymentAmount":5000.0,
-               "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
-               "paymentLot":"PCP05190514",
-               "paymentLotItem":"000001",
-               "clearingSAPDocument":"003330001826"
+               "chargeType":"Payment on account",
+               "mainType":"On Account",
+               "businessPartner":"0100141367",
+               "contractAccountCategory":"43",
+               "contractAccount":"027000000864",
+               "contractObjectType":"NI",
+               "contractObject":"00000240000000000314",
+               "sapDocumentNumber":"002850000401",
+               "sapDocumentNumberItem":"0001",
+               "mainTransaction":"0060",
+               "subTransaction":"0100",
+               "originalAmount":-4500.0,
+               "clearedAmount":-4500.0,
+               "items":[
+                  {
+                     "subItem":"000",
+                     "dueDate":"2019-05-10",
+                     "amount":-4500.0,
+                     "clearingDate":"2019-05-10",
+                     "clearingReason":"Allocated to Charge",
+                     "paymentLock":"Re-Check Payment method - Unsu",
+                     "paymentReference":"XG002610131772",
+                     "paymentAmount":5000.0,
+                     "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
+                     "paymentLot":"PCP05190514",
+                     "paymentLotItem":"000001",
+                     "clearingSAPDocument":"003330001826"
+                  }
+               ]
+            },
+            {
+               "chargeType":"Payment on account",
+               "mainType":"On Account",
+               "businessPartner":"0100141367",
+               "contractAccountCategory":"43",
+               "contractAccount":"027000000864",
+               "contractObjectType":"NI",
+               "contractObject":"00000240000000000314",
+               "sapDocumentNumber":"002900001960",
+               "sapDocumentNumberItem":"0001",
+               "mainTransaction":"0060",
+               "subTransaction":"0100",
+               "originalAmount":-1670.0,
+               "clearedAmount":-1670.0,
+               "items":[
+                  {
+                     "subItem":"000",
+                     "dueDate":"2019-05-14",
+                     "amount":-1670.0,
+                     "clearingDate":"2019-05-24",
+                     "clearingReason":"Outgoing payment - Paid",
+                     "outgoingPaymentMethod":"BACS Payment out",
+                     "paymentReference":"0100141367",
+                     "paymentAmount":1670.0,
+                     "paymentMethod":"PAYMENTS MADE BY CHEQUE",
+                     "paymentLot":"PS101190514",
+                     "paymentLotItem":"000001",
+                     "clearingSAPDocument":"002150001681"
+                  }
+               ]
+            },
+            {
+               "chargeType":"Payment on account",
+               "mainType":"On Account",
+               "periodKey":"19A1",
+               "periodKeyDescription":"February 2019 to April 2019",
+               "businessPartner":"0100141367",
+               "contractAccountCategory":"43",
+               "contractAccount":"027000000864",
+               "contractObjectType":"NI",
+               "contractObject":"00000240000000000314",
+               "sapDocumentNumber":"003160001928",
+               "sapDocumentNumberItem":"0001",
+               "mainTransaction":"0060",
+               "subTransaction":"0100",
+               "originalAmount":-600.0,
+               "clearedAmount":-600.0,
+               "items":[
+                  {
+                     "subItem":"000",
+                     "dueDate":"2019-05-10",
+                     "amount":-600.0,
+                     "clearingDate":"2019-05-10",
+                     "clearingReason":"Allocated to Charge",
+                     "paymentReference":"XF002610131861",
+                     "paymentAmount":600.0,
+                     "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
+                     "paymentLot":"PCP01190520",
+                     "paymentLotItem":"0",
+                     "clearingSAPDocument":"003140001771"
+                  }
+               ]
+            },
+            {
+               "chargeType":"Payment on account",
+               "mainType":"On Account",
+               "periodKey":"19A2",
+               "periodKeyDescription":"May 2019 to July 2019",
+               "businessPartner":"0100141367",
+               "contractAccountCategory":"43",
+               "contractAccount":"027000000864",
+               "contractObjectType":"NI",
+               "contractObject":"00000240000000000314",
+               "sapDocumentNumber":"003170001871",
+               "sapDocumentNumberItem":"0001",
+               "mainTransaction":"0060",
+               "subTransaction":"0100",
+               "originalAmount":-500.0,
+               "clearedAmount":-500.0,
+               "items":[
+                  {
+                     "subItem":"000",
+                     "dueDate":"2019-05-10",
+                     "amount":-500.0,
+                     "clearingDate":"2019-05-10",
+                     "clearingReason":"Allocated to Charge",
+                     "paymentReference":"XG002610131772",
+                     "paymentAmount":5000.0,
+                     "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
+                     "paymentLot":"PCP05190514",
+                     "paymentLotItem":"000001",
+                     "clearingSAPDocument":"003340001799"
+                  }
+               ]
+            },
+            {
+               "chargeType":"VAT Return Debit Charge",
+               "mainType":"VAT Return Charge",
+               "periodKey":"19AA",
+               "periodKeyDescription":"January 2019",
+               "taxPeriodFrom":"2019-01-01",
+               "taxPeriodTo":"2019-01-31",
+               "businessPartner":"0100141367",
+               "contractAccountCategory":"33",
+               "contractAccount":"091700003858",
+               "contractObjectType":"ZVAT",
+               "contractObject":"00000180000000002456",
+               "sapDocumentNumber":"003190002179",
+               "sapDocumentNumberItem":"0001",
+               "chargeReference":"XJ002610135792",
+               "mainTransaction":"4700",
+               "subTransaction":"1174",
+               "originalAmount":30000.0,
+               "outstandingAmount":30000.0,
+               "items":[
+                  {
+                     "subItem":"000",
+                     "dueDate":"2019-03-07",
+                     "amount":30000.0
+                  }
+               ]
+            },
+            {
+               "chargeType":"VAT Return Debit Charge",
+               "mainType":"VAT Return Charge",
+               "taxPeriodFrom":"2019-02-01",
+               "taxPeriodTo":"2019-02-28",
+               "businessPartner":"0100141367",
+               "contractAccountCategory":"33",
+               "contractAccount":"091700003858",
+               "contractObjectType":"ZVAT",
+               "contractObject":"00000180000000002456",
+               "sapDocumentNumber":"003460002272",
+               "sapDocumentNumberItem":"0001",
+               "chargeReference":"0000000012345678",
+               "mainTransaction":"4700",
+               "subTransaction":"1174",
+               "originalAmount":2000.0,
+               "outstandingAmount":2000.0,
+               "items":[
+                  {
+                     "subItem":"000",
+                     "dueDate":"2019-03-03",
+                     "amount":2000.0
+                  }
+               ]
             }
          ]
-      },
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"002900001960",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-1670.0,
-         "clearedAmount":-1670.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-05-14",
-               "amount":-1670.0,
-               "clearingDate":"2019-05-24",
-               "clearingReason":"Outgoing payment - Paid",
-               "outgoingPaymentMethod":"BACS Payment out",
-               "paymentReference":"0100141367",
-               "paymentAmount":1670.0,
-               "paymentMethod":"PAYMENTS MADE BY CHEQUE",
-               "paymentLot":"PS101190514",
-               "paymentLotItem":"000001",
-               "clearingSAPDocument":"002150001681"
-            }
-         ]
-      },
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "periodKey":"19A1",
-         "periodKeyDescription":"February 2019 to April 2019",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"003160001928",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-600.0,
-         "clearedAmount":-600.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-05-10",
-               "amount":-600.0,
-               "clearingDate":"2019-05-10",
-               "clearingReason":"Allocated to Charge",
-               "paymentReference":"XF002610131861",
-               "paymentAmount":600.0,
-               "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
-               "paymentLot":"PCP01190520",
-               "paymentLotItem":"0",
-               "clearingSAPDocument":"003140001771"
-            }
-         ]
-      },
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "periodKey":"19A2",
-         "periodKeyDescription":"May 2019 to July 2019",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"003170001871",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-500.0,
-         "clearedAmount":-500.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-05-10",
-               "amount":-500.0,
-               "clearingDate":"2019-05-10",
-               "clearingReason":"Allocated to Charge",
-               "paymentReference":"XG002610131772",
-               "paymentAmount":5000.0,
-               "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
-               "paymentLot":"PCP05190514",
-               "paymentLotItem":"000001",
-               "clearingSAPDocument":"003340001799"
-            }
-         ]
-      },
-      {
-         "chargeType":"VAT Return Debit Charge",
-         "mainType":"VAT Return Charge",
-         "periodKey":"19AA",
-         "periodKeyDescription":"January 2019",
-         "taxPeriodFrom":"2019-01-01",
-         "taxPeriodTo":"2019-01-31",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"33",
-         "contractAccount":"091700003858",
-         "contractObjectType":"ZVAT",
-         "contractObject":"00000180000000002456",
-         "sapDocumentNumber":"003190002179",
-         "sapDocumentNumberItem":"0001",
-         "chargeReference":"XJ002610135792",
-         "mainTransaction":"4700",
-         "subTransaction":"1174",
-         "originalAmount":30000.0,
-         "outstandingAmount":30000.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-03-07",
-               "amount":30000.0
-            }
-         ]
-      },
-      {
-         "chargeType":"VAT Return Debit Charge",
-         "mainType":"VAT Return Charge",
-         "taxPeriodFrom":"2019-02-01",
-         "taxPeriodTo":"2019-02-28",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"33",
-         "contractAccount":"091700003858",
-         "contractObjectType":"ZVAT",
-         "contractObject":"00000180000000002456",
-         "sapDocumentNumber":"003460002272",
-         "sapDocumentNumberItem":"0001",
-         "chargeReference":"0000000012345678",
-         "mainTransaction":"4700",
-         "subTransaction":"1174",
-         "originalAmount":2000.0,
-         "outstandingAmount":2000.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-03-03",
-               "amount":2000.0
-            }
-         ]
-      }
-   ]
-}""".stripMargin
+      }""".stripMargin
   )
 
   //language=JSON
   def financialDataOkTRS404(vrn: Vrn): JsValue = Json.parse(
     s"""{
-   "idType":"VRN",
-   "idNumber":"${vrn.value}",
-   "regimeType":"VATC",
-   "processingDate":"2019-11-05T10:35:24Z",
-   "financialTransactions":[
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"002850000401",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-4500.0,
-         "clearedAmount":-4500.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-05-10",
-               "amount":-4500.0,
-               "clearingDate":"2019-05-10",
-               "clearingReason":"Allocated to Charge",
-               "paymentLock":"Re-Check Payment method - Unsu",
-               "paymentReference":"XG002610131772",
-               "paymentAmount":5000.0,
-               "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
-               "paymentLot":"PCP05190514",
-               "paymentLotItem":"000001",
-               "clearingSAPDocument":"003330001826"
-            }
-         ]
-      },
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"002900001960",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-1670.0,
-         "clearedAmount":-1670.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-05-14",
-               "amount":-1670.0,
-               "clearingDate":"2019-05-24",
-               "clearingReason":"Outgoing payment - Paid",
-               "outgoingPaymentMethod":"BACS Payment out",
-               "paymentReference":"0100141367",
-               "paymentAmount":1670.0,
-               "paymentMethod":"PAYMENTS MADE BY CHEQUE",
-               "paymentLot":"PS101190514",
-               "paymentLotItem":"000001",
-               "clearingSAPDocument":"002150001681"
-            }
-         ]
-      },
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "periodKey":"19A1",
-         "periodKeyDescription":"February 2019 to April 2019",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"003160001928",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-600.0,
-         "clearedAmount":-600.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-05-10",
-               "amount":-600.0,
-               "clearingDate":"2019-05-10",
-               "clearingReason":"Allocated to Charge",
-               "paymentReference":"XF002610131861",
-               "paymentAmount":600.0,
-               "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
-               "paymentLot":"PCP01190520",
-               "paymentLotItem":"0",
-               "clearingSAPDocument":"003140001771"
-            }
-         ]
-      },
-      {
-         "chargeType":"Payment on account",
-         "mainType":"On Account",
-         "periodKey":"19A2",
-         "periodKeyDescription":"May 2019 to July 2019",
-         "businessPartner":"0100141367",
-         "contractAccountCategory":"43",
-         "contractAccount":"027000000864",
-         "contractObjectType":"NI",
-         "contractObject":"00000240000000000314",
-         "sapDocumentNumber":"003170001871",
-         "sapDocumentNumberItem":"0001",
-         "mainTransaction":"0060",
-         "subTransaction":"0100",
-         "originalAmount":-500.0,
-         "clearedAmount":-500.0,
-         "items":[
-            {
-               "subItem":"000",
-               "dueDate":"2019-05-10",
-               "amount":-500.0,
-               "clearingDate":"2019-05-10",
-               "clearingReason":"Allocated to Charge",
-               "paymentReference":"XG002610131772",
-               "paymentAmount":5000.0,
-               "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
-               "paymentLot":"PCP05190514",
-               "paymentLotItem":"000001",
-               "clearingSAPDocument":"003340001799"
-            }
-         ]
-      }
-   ]
-}""".stripMargin
+       "idType":"VRN",
+       "idNumber":"${vrn.value}",
+       "regimeType":"VATC",
+       "processingDate":"2019-11-05T10:35:24Z",
+       "financialTransactions":[
+          {
+             "chargeType":"Payment on account",
+             "mainType":"On Account",
+             "businessPartner":"0100141367",
+             "contractAccountCategory":"43",
+             "contractAccount":"027000000864",
+             "contractObjectType":"NI",
+             "contractObject":"00000240000000000314",
+             "sapDocumentNumber":"002850000401",
+             "sapDocumentNumberItem":"0001",
+             "mainTransaction":"0060",
+             "subTransaction":"0100",
+             "originalAmount":-4500.0,
+             "clearedAmount":-4500.0,
+             "items":[
+                {
+                   "subItem":"000",
+                   "dueDate":"2019-05-10",
+                   "amount":-4500.0,
+                   "clearingDate":"2019-05-10",
+                   "clearingReason":"Allocated to Charge",
+                   "paymentLock":"Re-Check Payment method - Unsu",
+                   "paymentReference":"XG002610131772",
+                   "paymentAmount":5000.0,
+                   "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
+                   "paymentLot":"PCP05190514",
+                   "paymentLotItem":"000001",
+                   "clearingSAPDocument":"003330001826"
+                }
+             ]
+          },
+          {
+             "chargeType":"Payment on account",
+             "mainType":"On Account",
+             "businessPartner":"0100141367",
+             "contractAccountCategory":"43",
+             "contractAccount":"027000000864",
+             "contractObjectType":"NI",
+             "contractObject":"00000240000000000314",
+             "sapDocumentNumber":"002900001960",
+             "sapDocumentNumberItem":"0001",
+             "mainTransaction":"0060",
+             "subTransaction":"0100",
+             "originalAmount":-1670.0,
+             "clearedAmount":-1670.0,
+             "items":[
+                {
+                   "subItem":"000",
+                   "dueDate":"2019-05-14",
+                   "amount":-1670.0,
+                   "clearingDate":"2019-05-24",
+                   "clearingReason":"Outgoing payment - Paid",
+                   "outgoingPaymentMethod":"BACS Payment out",
+                   "paymentReference":"0100141367",
+                   "paymentAmount":1670.0,
+                   "paymentMethod":"PAYMENTS MADE BY CHEQUE",
+                   "paymentLot":"PS101190514",
+                   "paymentLotItem":"000001",
+                   "clearingSAPDocument":"002150001681"
+                }
+             ]
+          },
+          {
+             "chargeType":"Payment on account",
+             "mainType":"On Account",
+             "periodKey":"19A1",
+             "periodKeyDescription":"February 2019 to April 2019",
+             "businessPartner":"0100141367",
+             "contractAccountCategory":"43",
+             "contractAccount":"027000000864",
+             "contractObjectType":"NI",
+             "contractObject":"00000240000000000314",
+             "sapDocumentNumber":"003160001928",
+             "sapDocumentNumberItem":"0001",
+             "mainTransaction":"0060",
+             "subTransaction":"0100",
+             "originalAmount":-600.0,
+             "clearedAmount":-600.0,
+             "items":[
+                {
+                   "subItem":"000",
+                   "dueDate":"2019-05-10",
+                   "amount":-600.0,
+                   "clearingDate":"2019-05-10",
+                   "clearingReason":"Allocated to Charge",
+                   "paymentReference":"XF002610131861",
+                   "paymentAmount":600.0,
+                   "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
+                   "paymentLot":"PCP01190520",
+                   "paymentLotItem":"0",
+                   "clearingSAPDocument":"003140001771"
+                }
+             ]
+          },
+          {
+             "chargeType":"Payment on account",
+             "mainType":"On Account",
+             "periodKey":"19A2",
+             "periodKeyDescription":"May 2019 to July 2019",
+             "businessPartner":"0100141367",
+             "contractAccountCategory":"43",
+             "contractAccount":"027000000864",
+             "contractObjectType":"NI",
+             "contractObject":"00000240000000000314",
+             "sapDocumentNumber":"003170001871",
+             "sapDocumentNumberItem":"0001",
+             "mainTransaction":"0060",
+             "subTransaction":"0100",
+             "originalAmount":-500.0,
+             "clearedAmount":-500.0,
+             "items":[
+                {
+                   "subItem":"000",
+                   "dueDate":"2019-05-10",
+                   "amount":-500.0,
+                   "clearingDate":"2019-05-10",
+                   "clearingReason":"Allocated to Charge",
+                   "paymentReference":"XG002610131772",
+                   "paymentAmount":5000.0,
+                   "paymentMethod":"CREDIT FOR INTERNET RECEIPTS",
+                   "paymentLot":"PCP05190514",
+                   "paymentLotItem":"000001",
+                   "clearingSAPDocument":"003340001799"
+                }
+             ]
+          }
+       ]
+    }""".stripMargin
   )
-
 }
 

@@ -32,24 +32,14 @@ package support
  * limitations under the License.
  */
 
-import java.time._
-import java.time.format.DateTimeFormatter
-
-import com.google.inject.{AbstractModule, Provides}
-import javax.inject.Singleton
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.htmlunit.HtmlUnitDriver
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfterEach, FreeSpecLike, Matchers}
+import org.scalatest.{FreeSpecLike, Matchers}
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
+import play.api.Application
 import play.api.inject.Injector
-import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
-import play.api.mvc.{AnyContentAsEmpty, Request, Result}
-import play.api.test.{CSRFTokenHelper, FakeRequest}
-import play.api.{Application, Configuration, Environment}
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.ExecutionContext
 
@@ -59,64 +49,25 @@ import scala.concurrent.ExecutionContext
 
 trait ItSpec
   extends FreeSpecLike
-  with RichMatchers
-  with BeforeAndAfterEach
   with GuiceOneServerPerTest
   with WireMockSupport
-  with Matchers {
+  with Matchers
+  with ScalaFutures {
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val emptyHC: HeaderCarrier = HeaderCarrier()
 
-  lazy val frozenZonedDateTime: ZonedDateTime = {
-    val formatter = DateTimeFormatter.ISO_DATE_TIME
-    LocalDateTime.parse("2018-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
-  }
-
-  implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-
-  lazy val servicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
-  lazy val config = fakeApplication.injector.instanceOf[Configuration]
-  lazy val env = fakeApplication.injector.instanceOf[Environment]
-  lazy val overridingsModule: AbstractModule = new AbstractModule {
-
-    override def configure(): Unit = ()
-
-    @Provides
-    @Singleton
-    def clock: Clock = {
-      val fixedInstant = LocalDateTime.parse(frozenTimeString).toInstant(ZoneOffset.UTC)
-      Clock.fixed(fixedInstant, ZoneId.systemDefault)
-    }
-  }
-  val baseUrl: String = s"http://localhost:$WireMockSupport.port"
-
-  override implicit val patienceConfig = PatienceConfig(
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(
     timeout  = scaled(Span(3, Seconds)),
     interval = scaled(Span(300, Millis)))
 
-  implicit val emptyHC = HeaderCarrier()
-  val webdriverUr: String = s"http://localhost:$port"
-  val connector = injector.instanceOf[TestConnector]
+  lazy val injector: Injector = fakeApplication().injector
 
-  def httpClient = fakeApplication().injector.instanceOf[HttpClient]
-
-  def injector: Injector = fakeApplication().injector
-
-  override def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
-    .configure(configMap).build()
-
-  def configMap = Map[String, Any](
-    "microservice.services.auth.port" -> WireMockSupport.port, "microservice.services.des.port" -> WireMockSupport.port, "microservice.services.auth.port" -> WireMockSupport.port
-  )
-
-  def frozenTimeString: String = "2027-11-02T16:33:51.880"
-
-  def fakeRequest: Request[AnyContentAsEmpty.type] = CSRFTokenHelper.addCSRFToken(FakeRequest())
-
-  def status(of: Result) = of.header.status
-
-  protected implicit val webDriver: WebDriver = new HtmlUnitDriver(false)
-
-  def goToViaPath(path: String) = webDriver.get(s"$webdriverUr$path")
-
+  override def fakeApplication(): Application =
+    new GuiceApplicationBuilder()
+      .configure(Map[String, Any](
+        "microservice.services.auth.port" -> WireMockSupport.port,
+        "microservice.services.des.port" -> WireMockSupport.port,
+        "microservice.services.auth.port" -> WireMockSupport.port
+      )).build()
 }
 

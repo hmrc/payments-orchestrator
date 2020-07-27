@@ -17,136 +17,86 @@
 package support
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.Vrn
 
 object WireMockResponses {
 
-  def financialsOkMultiple(vrn: Vrn) = {
+  def financialsOkMultiple(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.financialDataOk(vrn).toString()
-            .stripMargin)))
+        .withBody(DesData.financialDataOk(vrn).toString().stripMargin)))
 
-  }
-
-  def financialsOkTRS(vrn: Vrn) = {
+  def financialsOkTRS(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.financialDataOkTRS(vrn).toString()
-            .stripMargin)))
+        .withBody(DesData.financialDataOkTRS(vrn).toString().stripMargin)))
 
-  }
-
-  def financialDataOkTRS404(vrn: Vrn) = {
+  def financialDataOkTRS404(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.financialDataOkTRS404(vrn).toString()
-            .stripMargin)))
+        .withBody(DesData.financialDataOkTRS404(vrn).toString().stripMargin)))
 
-  }
-
-  def financialsOkSingle(vrn: Vrn) = {
+  def financialsOkSingle(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.financialDataSingleOk(vrn: Vrn).toString()
-            .stripMargin)))
+        .withBody(DesData.financialDataSingleOk(vrn: Vrn).toString().stripMargin)))
 
-  }
-
-  def customerDataOkWithBankDetails(vrn: Vrn) = {
+  def customerDataOkWithBankDetails(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/vat/customer/vrn/${vrn.value}/information"""))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.customerDataOk.toString()
-            .stripMargin)))
+        .withBody(DesData.customerDataOk.toString().stripMargin)))
 
-  }
-
-  def customerDataOkWithoutBankDetails(vrn: Vrn) = {
+  def customerDataOkWithoutBankDetails(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/vat/customer/vrn/${vrn.value}/information"""))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.customerDataOkWithoutBankDetails.toString()
-            .stripMargin)))
+        .withBody(DesData.customerDataOkWithoutBankDetails.toString().stripMargin)))
 
-  }
-
-  def financialsNotFound = {
+  def financialsNotFound(): StubMapping =
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()
         .withStatus(404)
-        .withBody(
-          DesData.financialDataNotFound.toString()
-            .stripMargin)))
+        .withBody(DesData.financialDataNotFound.toString().stripMargin)))
 
-  }
-
-  def customerNotFound(vrn: Vrn) = {
+  def customerNotFound(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/vat/customer/vrn/${vrn.value}/information"""))
       .willReturn(aResponse()
         .withStatus(404)
-        .withBody(
-          DesData.customerDataNotFound.toString()
-            .stripMargin)))
+        .withBody(DesData.customerDataNotFound.toString().stripMargin)))
 
-  }
-
-  def ddNotFound(vrn: Vrn) = {
+  def ddNotFound(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/cross-regime/direct-debits/vatc/vrn/${vrn.value}"""))
       .willReturn(aResponse()
         .withStatus(404)
-        .withBody(
-          DesData.ddNotFound.toString()
-            .stripMargin)))
+        .withBody(DesData.ddNotFound.toString().stripMargin)))
 
-  }
-
-  def ddOk(vrn: Vrn) = {
+  def ddOk(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/cross-regime/direct-debits/vatc/vrn/${vrn.value}"""))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.ddOk.toString()
-            .stripMargin)))
-  }
+        .withBody(DesData.ddOk.toString().stripMargin)))
 
-  def ddOkNoMandate(vrn: Vrn) = {
+  def ddOkNoMandate(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/cross-regime/direct-debits/vatc/vrn/${vrn.value}"""))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.ddOkNoMandate.toString()
-            .stripMargin)))
+        .withBody(DesData.ddOkNoMandate.toString().stripMargin)))
 
-  }
-
-  def repaymentDetailsNotFound(vrn: Vrn) = {
+  def repaymentDetailsNotFound(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/cross-regime/repayment/VATC/VRN/${vrn.value}"""))
       .willReturn(aResponse()
         .withStatus(404)
-        .withBody(
-          DesData.repaymentDetailsNotFound.toString()
-            .stripMargin)))
+        .withBody(DesData.repaymentDetailsNotFound.toString().stripMargin)))
 
-  }
-
-  def repaymentDetailsOk(vrn: Vrn) = {
+  def repaymentDetailsOk(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching(s"""/cross-regime/repayment/VATC/VRN/${vrn.value}"""))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          DesData.repaymentDetailJson.toString()
-            .stripMargin)))
-  }
-
+        .withBody(DesData.repaymentDetailJson.toString().stripMargin)))
 }

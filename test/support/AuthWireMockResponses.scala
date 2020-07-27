@@ -22,29 +22,17 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.Vrn
 
 object AuthWireMockResponses {
+  private val oid: String = "556737e15500005500eaf68f"
 
-  val expectedDetail = "SessionRecordNotFound"
-  val oid: String = "556737e15500005500eaf68f"
+  private val headers = new HttpHeaders(new HttpHeader("WWW-Authenticate", "MDTP detail=\"SessionRecordNotFound\""))
 
-  val headers: HttpHeaders = new HttpHeaders(
-    new HttpHeader("WWW-Authenticate", s"""MDTP detail="$expectedDetail"""")
-  // new HttpHeader("Failing-Enrolment", "SA")
-  )
-
-  def authLoginStubOk: StubMapping = {
-    stubFor(get(urlMatching("/auth-login-stub/gg-sign-in/*"))
-      .willReturn(aResponse()
-        .withStatus(200)))
-  }
-
-  def authFailed: StubMapping = {
+  def authFailed(): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(401)
         .withHeaders(headers)))
-  }
 
-  def authOkNoEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String): StubMapping = {
+  def authOkNoEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(200)
@@ -73,9 +61,7 @@ object AuthWireMockResponses {
              }
        """.stripMargin)))
 
-  }
-
-  def authOkWithEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String, vrn: Vrn, enrolment: String): StubMapping = {
+  def authOkWithEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String, vrn: Vrn, enrolment: String): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(200)
@@ -102,7 +88,7 @@ object AuthWireMockResponses {
                "affinityGroup": "$affinityGroup",
                "allEnrolments": [
                         {
-                          "key": "${enrolment}",
+                          "key": "$enrolment",
                           "identifiers": [
                             {
                               "key": "VRN",
@@ -114,7 +100,4 @@ object AuthWireMockResponses {
                       ]
              }
        """.stripMargin)))
-
-  }
-
 }

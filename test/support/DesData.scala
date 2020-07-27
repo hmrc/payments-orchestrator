@@ -23,26 +23,23 @@ import model.des.{DirectDebitDetails, _}
 import play.api.libs.json.{JsValue, Json}
 
 object DesData {
-
-  val bankDetails: BankDetails = BankDetails(Some("Account holder"), Some("11112222"), Some("667788"))
-  val address: Address = Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))
-  val ppob: PPOB = PPOB(Some(address))
-
-  val customerDetails: CustomerDetails = CustomerDetails(Some(true), Some(false))
-  val approvedInformation = ApprovedInformation(Some(customerDetails), Some(bankDetails), Some(ppob))
-  val changeIndicators = ChangeIndicators(Some(true), Some(false))
-  val inFlightInformation = InFlightInformation(Some(changeIndicators))
+  private val approvedInformation =
+    ApprovedInformation(
+      Some(CustomerDetails(Some(true), Some(false))),
+      Some(BankDetails(Some("Account holder"), Some("11112222"), Some("667788"))),
+      Some(PPOB(Some(Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))))))
 
   val approvedCustomerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation), None)
 
-  val customerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation), Some(inFlightInformation))
+  val customerInformation: CustomerInformation =
+    CustomerInformation(Some(approvedInformation), Some(InFlightInformation(Some(ChangeIndicators(Some(true), Some(false))))))
 
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
-  val directDebitDataNone: DirectDebitData = DirectDebitData(None)
-  val transaction: Transaction = Transaction("VAT Return Credit Charge", Option("18AC"))
-  val financialData: FinancialData = FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(transaction))
 
-  val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
+  val financialData: FinancialData =
+    FinancialData("VRN", "2345678890", "VATC", "2019-08-20T10:44:05Z", Seq(Transaction("VAT Return Credit Charge", Option("18AC"))))
+
+  val repaymentsDetail: Seq[RepaymentDetailData] = Seq(RepaymentDetailData(
     LocalDate.parse("2001-01-01"),
     Option(LocalDate.parse("2001-01-01")),
     Option(LocalDate.parse("2001-01-01")),
@@ -51,9 +48,7 @@ object DesData {
     BigDecimal(1000),
     Option(1),
     100.02
-  )
-
-  val repaymentsDetail: Seq[RepaymentDetailData] = Seq(repaymentDetail)
+  ))
 
   //language=JSON
   val repaymentDetailJson: JsValue = Json.parse(

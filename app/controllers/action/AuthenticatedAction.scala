@@ -17,20 +17,16 @@
 package controllers.action
 
 import com.google.inject.Inject
-import play.api.Logger
-import play.api.mvc.Results._
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.AuthorisedFunctions
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, NoActiveSession}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthenticatedAction @Inject() (
-    af:           AuthorisedFunctions,
-    badResponses: UnhappyPathResponses,
-    cc:           MessagesControllerComponents)(implicit ec: ExecutionContext) extends ActionBuilder[AuthenticatedRequest, AnyContent] {
+class AuthenticatedAction @Inject() (af: AuthorisedFunctions, cc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  extends ActionBuilder[AuthenticatedRequest, AnyContent] {
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
@@ -41,8 +37,7 @@ class AuthenticatedAction @Inject() (
     }
   }
 
-  override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+  override val parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
 
-  override protected def executionContext: ExecutionContext = cc.executionContext
-
+  override protected val executionContext: ExecutionContext = cc.executionContext
 }

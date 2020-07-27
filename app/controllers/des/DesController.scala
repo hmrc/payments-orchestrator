@@ -19,10 +19,10 @@ package controllers.des
 import connectors.des.DesConnector
 import controllers.action.Actions
 import javax.inject.{Inject, Singleton}
-import model.{ChargeType, Vrn}
 import model.des.Transaction
+import model.{ChargeType, Vrn}
 import play.api.Logger
-import play.api.libs.json.Json
+import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
@@ -41,18 +41,12 @@ class DesController @Inject() (
   extends BackendController(cc) {
 
   def getFinancialData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    for {
-      fd <- desConnector.getFinancialData(vrn)
-    } yield {
-
+    desConnector.getFinancialData(vrn).map { fd =>
       val filtered: Seq[Transaction] = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
-      if (filtered.size == 0) NotFound
-      else {
-        val newFd = fd.copy(financialTransactions = filtered)
-        Ok(Json.toJson(newFd))
-      }
-    }
 
+      if (filtered.isEmpty) NotFound
+      else Ok(toJson(fd.copy(financialTransactions = filtered)))
+    }
   }
 
   private def isCreditOrDebitChargeType(transaction: Transaction): Boolean = transaction.chargeType == ChargeType.vatReturnCreditCharge || transaction.chargeType == ChargeType.vatReturnDebitCharge
@@ -60,21 +54,14 @@ class DesController @Inject() (
   def getCustomerData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     Logger.debug("getCustomerData called")
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-    for {
-      cd <- desConnector.getCustomerData(vrn)
-    } yield (Ok(Json.toJson(cd)))
+    desConnector.getCustomerData(vrn).map(cd => Ok(toJson(cd)))
   }
 
   def getDDData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    for {
-      dd <- desConnector.getDDData(vrn)
-    } yield (Ok(Json.toJson(dd)))
+    desConnector.getDDData(vrn).map(dd => Ok(toJson(dd)))
   }
 
   def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    for {
-      rd <- desConnector.getRepaymentDetails(vrn)
-    } yield (Ok(Json.toJson(rd)))
+    desConnector.getRepaymentDetails(vrn).map(rd => Ok(toJson(rd)))
   }
-
 }

@@ -18,15 +18,14 @@ package controllers.des
 
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import model.{EnrolmentKeys, Vrn}
-import play.api.Logger
 import play.api.http.Status
-import support.{AuthWireMockResponses, DesData, ItSpec, WireMockResponses}
+import support._
 
 class DesControllerSpec extends ItSpec {
+  private val vrn = Vrn("2345678890")
+  private val vrnFailed = Vrn("2345678891")
 
-  val desController = injector.instanceOf[DesController]
-  val vrn: Vrn = Vrn("2345678890")
-  val vrnFailed: Vrn = Vrn("2345678891")
+  private lazy val connector = injector.instanceOf[TestConnector]
 
   "Get Customer Information" in {
     AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
@@ -76,7 +75,7 @@ class DesControllerSpec extends ItSpec {
 
   "Get Financial data 404" in {
     AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
-    WireMockResponses.financialsNotFound
+    WireMockResponses.financialsNotFound()
     val result = connector.getFinancialData(vrn).failed.futureValue
     result.getMessage should include("returned 404 (Not Found)")
   }
@@ -96,7 +95,7 @@ class DesControllerSpec extends ItSpec {
     val result = connector.getDDData(vrn).futureValue
     result.status shouldBe Status.OK
     val dd = result.json.as[DirectDebitData]
-    dd shouldBe DesData.directDebitDataNone
+    dd shouldBe DirectDebitData(None)
   }
 
   "Get DD data 404" in {
@@ -123,7 +122,7 @@ class DesControllerSpec extends ItSpec {
   }
 
   "Get repayment data, not authorised should result in 401" in {
-    AuthWireMockResponses.authFailed
+    AuthWireMockResponses.authFailed()
     WireMockResponses.repaymentDetailsOk(vrn)
     val result = connector.getRepaymentDetails(vrn).failed.futureValue
     result.getMessage should include("Session record not found")

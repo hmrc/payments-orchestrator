@@ -50,6 +50,7 @@ lazy val microservice = Project(appName, file("."))
       "-Ypartial-unification" //required by cats
     )
   )
+  .disablePlugins(JUnitXmlReportPlugin)
 
 
 val appName = "payments-orchestrator"

@@ -23,8 +23,11 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
-  def securedAction(vrn: Vrn): ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction andThen validateVrn(vrn)
+class Actions @Inject() (notFoundResponseAction: NotFoundResponseAction,
+                         authoriseAction:        AuthenticatedAction,
+                         unhappyPathResponses:   UnhappyPathResponses)(implicit ec: ExecutionContext) {
+  def securedAction(vrn: Vrn): ActionBuilder[AuthenticatedRequest, AnyContent] =
+    notFoundResponseAction andThen authoriseAction andThen validateVrn(vrn)
 
   private def validateVrn(vrn: Vrn): ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] =
     new ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] {

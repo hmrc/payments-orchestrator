@@ -40,8 +40,7 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     customerNotFound(vrn)
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 500
-    result.body should include("returned 404")
+    result.status shouldBe 404
   }
 
   "Get Financial data" in {
@@ -72,16 +71,14 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     DesStub.financialDataOkTRS404(vrn)
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 500
-    result.body should include("returned 404")
+    result.status shouldBe 404
   }
 
   "Get Financial data 404" in {
     authOkWithEnrolments()
     DesStub.financialsNotFound()
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 500
-    result.body should include("returned 404")
+    result.status shouldBe 404
   }
 
   "Get DD data" in {
@@ -105,9 +102,8 @@ class DesControllerSpec extends ItSpec {
   "Get DD data 404" in {
     authOkWithEnrolments()
     DesStub.ddNotFound(vrn)
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 500
-    result.body should include("returned 404")
+    val result = connector.getDDData(vrn).futureValue
+    result.status shouldBe 404
   }
 
   "Get repayment data" in {
@@ -123,8 +119,7 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     DesStub.repaymentDetailsNotFound(vrn)
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 500
-    result.body should include("returned 404")
+    result.status shouldBe 404
   }
 
   "Get repayment data, not authorised should result in 401" in {

@@ -23,7 +23,7 @@ import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import play.api.{Configuration, Logger}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
+import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
@@ -47,30 +47,30 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   private val desHeaderCarrier1533 = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorizationToken")))
     .withExtraHeaders("Environment" -> serviceEnvironment, "OriginatorID" -> "MDTP")
 
-  def getFinancialData(vrn: Vrn): Future[FinancialData] = {
+  def getFinancialData(vrn: Vrn): Future[Option[FinancialData]] = {
     Logger.debug(s"Calling des api 1166 for vrn $vrn")
     val now = LocalDate.now()
     val aYearAgo = LocalDate.now().minusYears(1)
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=$aYearAgo&dateTo=$now"
     Logger.debug(s"""Calling des api 1166 with url $getFinancialURL""")
-    httpClient.GET[FinancialData](getFinancialURL)
+    httpClient.GET[Option[FinancialData]](getFinancialURL)
   }
 
-  def getCustomerData(vrn: Vrn): Future[CustomerInformation] = {
+  def getCustomerData(vrn: Vrn): Future[Option[CustomerInformation]] = {
     Logger.debug(s"Calling des api 1363 for vrn $vrn")
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getCustomerURL: String = s"$serviceURL$customerUrl/${vrn.value}/information"
     Logger.debug(s"""Calling des api 1363 with url $getCustomerURL""")
-    httpClient.GET[CustomerInformation](getCustomerURL)
+    httpClient.GET[Option[CustomerInformation]](getCustomerURL)
   }
 
-  def getDDData(vrn: Vrn): Future[DirectDebitData] = {
+  def getDDData(vrn: Vrn): Future[Option[DirectDebitData]] = {
     Logger.debug(s"Calling des api 1396 for vrn $vrn")
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getDDUrl: String = s"$serviceURL$ddUrl/${vrn.value}"
     Logger.debug(s"""Calling des api 1396 with url $getDDUrl""")
-    httpClient.GET[DirectDebitData](getDDUrl)
+    httpClient.GET[Option[DirectDebitData]](getDDUrl)
   }
 
   def getRepaymentDetails(vrn: Vrn): Future[Seq[RepaymentDetailData]] = {

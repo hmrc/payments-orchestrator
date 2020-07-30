@@ -17,23 +17,18 @@
 package controllers.action
 
 import com.google.inject.Inject
+import play.api.http.Status.NOT_FOUND
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthenticatedAction @Inject() (af: AuthorisedFunctions, cc: MessagesControllerComponents)
-  extends ActionBuilder[AuthenticatedRequest, AnyContent] {
-
-  override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
-
-    af.authorised.retrieve(Retrievals.allEnrolments) { enrolments =>
-      block(new AuthenticatedRequest(request, enrolments))
-    }(hc, executionContext)
+class NotFoundResponseAction @Inject() (cc: MessagesControllerComponents) extends ActionBuilder[Request, AnyContent] with Results {
+  override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
+    block(request).recover {
+      case e: UpstreamErrorResponse if e.statusCode == NOT_FOUND => NotFound
+      case t: Throwable => throw t
+    }(executionContext)
   }
 
   override val parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser

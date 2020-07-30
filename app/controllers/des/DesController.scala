@@ -23,7 +23,7 @@ import model.des.Transaction
 import model.{ChargeType, Vrn}
 import play.api.Logger
 import play.api.libs.json.Json.toJson
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
@@ -41,11 +41,13 @@ class DesController @Inject() (
   extends BackendController(cc) {
 
   def getFinancialData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    desConnector.getFinancialData(vrn).map { fd =>
-      val filtered: Seq[Transaction] = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
+    desConnector.getFinancialData(vrn).map { maybeFinancialDetails =>
+      maybeFinancialDetails.fold(NotFound: Result) { fd =>
+        val filtered = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
 
-      if (filtered.isEmpty) NotFound
-      else Ok(toJson(fd.copy(financialTransactions = filtered)))
+        if (filtered.isEmpty) NotFound
+        else Ok(toJson(fd.copy(financialTransactions = filtered)))
+      }
     }
   }
 

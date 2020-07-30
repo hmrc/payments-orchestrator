@@ -18,9 +18,10 @@ package controllers.des
 
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
-import support.AuthStub.{authOkWithEnrolments, authOkNoEnrolments, authFailed}
+import play.api.libs.json.JsNull
+import support.AuthStub.{authFailed, authOkNoEnrolments, authOkWithEnrolments}
 import support.DesData.vrn
-import support.DesStub.{financialsOkSingle, customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple}
+import support.DesStub.{customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple, financialsOkSingle}
 import support._
 
 class DesControllerSpec extends ItSpec {
@@ -40,7 +41,8 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     customerNotFound(vrn)
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 404
+    result.status shouldBe 200
+    result.json shouldBe JsNull
   }
 
   "Get Financial data" in {
@@ -71,14 +73,16 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     DesStub.financialDataOkTRS404(vrn)
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 404
+    result.status shouldBe 200
+    result.json shouldBe JsNull
   }
 
   "Get Financial data 404" in {
     authOkWithEnrolments()
     DesStub.financialsNotFound()
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 404
+    result.status shouldBe 200
+    result.json shouldBe JsNull
   }
 
   "Get DD data" in {
@@ -103,7 +107,8 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     DesStub.ddNotFound(vrn)
     val result = connector.getDDData(vrn).futureValue
-    result.status shouldBe 404
+    result.status shouldBe 200
+    result.json shouldBe JsNull
   }
 
   "Get repayment data" in {
@@ -119,7 +124,8 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     DesStub.repaymentDetailsNotFound(vrn)
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 404
+    result.status shouldBe 200
+    result.json shouldBe JsNull
   }
 
   "Get repayment data, not authorised should result in 401" in {

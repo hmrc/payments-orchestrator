@@ -323,12 +323,15 @@ object DesData {
          }
      }""".stripMargin)
 
+
   //language=JSON
   val financialDataNotFound: JsValue = Json.parse(
-    s"""{
-          "code": "NOT_FOUND",
-          "reason": "The remote endpoint has indicated that no data can be found."
-        }""".stripMargin)
+    s"""
+       {
+           "code": "NOT_FOUND",
+           "reason": "The back end has indicated that No subscription can be found."
+       }
+    """.stripMargin)
 
   //language=JSON
   def financialDataOk(vrn: Vrn): JsValue = Json.parse(

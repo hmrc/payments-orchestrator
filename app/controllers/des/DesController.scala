@@ -22,11 +22,14 @@ import javax.inject.{Inject, Singleton}
 import model.des.Transaction
 import model.{ChargeType, Vrn}
 import play.api.Logger
+import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
+import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext
 
@@ -41,11 +44,12 @@ class DesController @Inject() (
   extends BackendController(cc) {
 
   def getFinancialData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
+    Logger.debug("getFinancialData called")
     desConnector.getFinancialData(vrn).map { maybeFinancialDetails =>
-      maybeFinancialDetails.fold(NotFound: Result) { fd =>
+      maybeFinancialDetails.fold(notFound: Result) { fd =>
         val filtered = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
 
-        if (filtered.isEmpty) NotFound
+        if (filtered.isEmpty) notFound
         else Ok(toJson(fd.copy(financialTransactions = filtered)))
       }
     }
@@ -56,14 +60,30 @@ class DesController @Inject() (
   def getCustomerData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     Logger.debug("getCustomerData called")
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-    desConnector.getCustomerData(vrn).map(cd => Ok(toJson(cd)))
+    desConnector.getCustomerData(vrn).map{
+      case Some(cd) => Ok(toJson(cd))
+      case None     => notFound
+    }
   }
 
   def getDDData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    desConnector.getDDData(vrn).map(dd => Ok(toJson(dd)))
+    Logger.debug("getDDData called")
+    desConnector.getDDData(vrn).map{
+      case Some(dd) => Ok(toJson(dd))
+      case None     => notFound
+    }
   }
 
   def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    desConnector.getRepaymentDetails(vrn).map(rd => Ok(toJson(rd)))
+    Logger.debug("getRepaymentDetails called")
+    desConnector.getRepaymentDetails(vrn).map{
+      case Some(rd) => Ok(toJson(rd))
+      case None     => notFound
+    }
   }
+
+  private def notFound(implicit request: Request[_]) = {
+    NotFound(Json.toJson(ErrorResponse(NOT_FOUND, "URI not found", requested = Some(request.path))))
+  }
+
 }

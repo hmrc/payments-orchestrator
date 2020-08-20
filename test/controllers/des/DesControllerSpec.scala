@@ -18,11 +18,12 @@ package controllers.des
 
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
-import play.api.libs.json.JsNull
+import play.api.libs.json.Json
 import support.AuthStub.{authFailed, authOkNoEnrolments, authOkWithEnrolments}
 import support.DesData.vrn
 import support.DesStub.{customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple, financialsOkSingle}
 import support._
+import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
 
 class DesControllerSpec extends ItSpec {
   private val vrnFailed = Vrn("2345678891")
@@ -37,12 +38,16 @@ class DesControllerSpec extends ItSpec {
     result.json.as[CustomerInformation] shouldBe DesData.customerInformation
   }
 
+  private def errorResponse(url: String) = {
+    Json.toJson(ErrorResponse(404, "URI not found", requested = Some(url)))
+  }
+
   "Get Customer Information 404" in {
     authOkWithEnrolments()
     customerNotFound(vrn)
     val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 200
-    result.json shouldBe JsNull
+    result.status shouldBe 404
+    result.json shouldBe errorResponse("/payments-orchestrator/des/customer-data/vrn/2345678890")
   }
 
   "Get Financial data" in {
@@ -72,17 +77,17 @@ class DesControllerSpec extends ItSpec {
   "Get Financial data (financialDataOkTRS404)" in {
     authOkWithEnrolments()
     DesStub.financialDataOkTRS404(vrn)
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 200
-    result.json shouldBe JsNull
+    val result = connector.getFinancialData(vrn).futureValue
+    result.status shouldBe 404
+    result.json shouldBe errorResponse("/payments-orchestrator/des/financial-data/vrn/2345678890")
   }
 
   "Get Financial data 404" in {
     authOkWithEnrolments()
     DesStub.financialsNotFound()
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 200
-    result.json shouldBe JsNull
+    val result = connector.getFinancialData(vrn).futureValue
+    result.status shouldBe 404
+    result.json shouldBe errorResponse("/payments-orchestrator/des/financial-data/vrn/2345678890")
   }
 
   "Get DD data" in {
@@ -107,8 +112,8 @@ class DesControllerSpec extends ItSpec {
     authOkWithEnrolments()
     DesStub.ddNotFound(vrn)
     val result = connector.getDDData(vrn).futureValue
-    result.status shouldBe 200
-    result.json shouldBe JsNull
+    result.status shouldBe 404
+    result.json shouldBe errorResponse("/payments-orchestrator/des/dd-data/vrn/2345678890")
   }
 
   "Get repayment data" in {
@@ -123,9 +128,9 @@ class DesControllerSpec extends ItSpec {
   "Get repayment data 404" in {
     authOkWithEnrolments()
     DesStub.repaymentDetailsNotFound(vrn)
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 200
-    result.json shouldBe JsNull
+    val result = connector.getRepaymentDetails(vrn).futureValue
+    result.status shouldBe 404
+    result.json shouldBe errorResponse("/payments-orchestrator/des/repayment-details/vrn/2345678890")
   }
 
   "Get repayment data, not authorised should result in 401" in {

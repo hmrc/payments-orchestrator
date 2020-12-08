@@ -3,10 +3,12 @@ import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import wartremover.{Wart, wartremoverErrors, wartremoverExcluded}
 
+val scalaV = "2.12.12"
+scalaVersion := scalaV
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(
-    scalaVersion := "2.12.12",
     resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     retrieveManaged := false,
@@ -47,7 +49,8 @@ lazy val microservice = Project(appName, file("."))
       "-unchecked",
       "-language:implicitConversions",
       "-language:reflectiveCalls",
-      "-Ypartial-unification" //required by cats
+      "-Ypartial-unification", //required by cats
+      "-Ywarn-unused:-imports,-patvars,-privates,-locals,-explicits,-implicits,_"
     )
   )
   .disablePlugins(JUnitXmlReportPlugin)

@@ -14,6 +14,8 @@ e.g. Service manager profile: `sm --start VRT_ALL`
 
 *make sure you have mongo running
 
+***To avoid memory leak use 'sbt -mem 2048 clean test compile'***
+
 ---
 
 ### Test data

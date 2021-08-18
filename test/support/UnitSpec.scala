@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package support
 
-import org.scalatest.{FreeSpecLike, Matchers}
+import org.scalatest.freespec.AnyFreeSpecLike
+import org.scalatest.matchers.should.Matchers
 
 /**
  * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
  */
-trait UnitSpec extends FreeSpecLike with Matchers
+trait UnitSpec extends AnyFreeSpecLike with Matchers

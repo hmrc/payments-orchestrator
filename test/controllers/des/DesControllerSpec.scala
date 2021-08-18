@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,141 +16,160 @@
 
 package controllers.des
 
+import akka.util.Timeout
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{contentAsJson, contentAsString, status}
 import support.AuthStub.{authFailed, authOkNoEnrolments, authOkWithEnrolments}
 import support.DesData.vrn
 import support.DesStub.{customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple, financialsOkSingle}
 import support._
-import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
+import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
+
+import java.util.concurrent.TimeUnit
 
 class DesControllerSpec extends ItSpec {
   private val vrnFailed = Vrn("2345678891")
+  implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
 
-  private lazy val connector = injector.instanceOf[TestConnector]
+  val controller = injector.instanceOf[DesController]
 
   "Get Customer Information" in {
+    val request = FakeRequest()
     authOkWithEnrolments()
     customerDataOkWithBankDetails(vrn)
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 200
-    result.json.as[CustomerInformation] shouldBe DesData.customerInformation
+    val response = controller.getCustomerData(vrn)(request)
+    status(response) shouldBe 200
+    contentAsJson(response).as[CustomerInformation] shouldBe DesData.customerInformation
+  }
+
+  "Get Customer Information 404" in {
+    val request = FakeRequest("GET", "/payments-orchestrator/des/customer-data/vrn/2345678890")
+    authOkWithEnrolments()
+    customerNotFound(vrn)
+    val response = controller.getCustomerData(vrn)(request)
+    status(response) shouldBe 404
+    contentAsJson(response) shouldBe errorResponse("/payments-orchestrator/des/customer-data/vrn/2345678890")
   }
 
   private def errorResponse(url: String) = {
     Json.toJson(ErrorResponse(404, "URI not found", requested = Some(url)))
   }
 
-  "Get Customer Information 404" in {
-    authOkWithEnrolments()
-    customerNotFound(vrn)
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 404
-    result.json shouldBe errorResponse("/payments-orchestrator/des/customer-data/vrn/2345678890")
-  }
-
   "Get Financial data" in {
+    val request = FakeRequest()
     authOkWithEnrolments()
     financialsOkSingle(vrn)
-    val result = connector.getFinancialData(vrn).futureValue
-    result.status shouldBe 200
-    result.json.as[FinancialData] shouldBe DesData.financialData
+    val result = controller.getFinancialData(vrn)(request)
+    status(result) shouldBe 200
+    contentAsJson(result).as[FinancialData] shouldBe DesData.financialData
   }
 
   "Get Financial data (multiple)" in {
+    val request = FakeRequest()
     authOkWithEnrolments()
     financialsOkMultiple(vrn)
-    val result = connector.getFinancialData(vrn).futureValue
-    result.status shouldBe 200
-    result.json.as[FinancialData].financialTransactions.size shouldBe 5
+    val result = controller.getFinancialData(vrn)(request)
+    status(result) shouldBe 200
+    contentAsJson(result).as[FinancialData].financialTransactions.size shouldBe 5
   }
 
   "Get Financial data (financialsOkTRS)" in {
+    val request = FakeRequest()
     authOkWithEnrolments()
     DesStub.financialsOkTRS(vrn)
-    val result = connector.getFinancialData(vrn).futureValue
-    result.status shouldBe 200
-    result.json.as[FinancialData].financialTransactions.size shouldBe 2
+    val result = controller.getFinancialData(vrn)(request)
+    status(result) shouldBe 200
+    contentAsJson(result).as[FinancialData].financialTransactions.size shouldBe 2
   }
 
   "Get Financial data (financialDataOkTRS404)" in {
+    val request = FakeRequest("GET", "/payments-orchestrator/des/financial-data/vrn/2345678890")
     authOkWithEnrolments()
     DesStub.financialDataOkTRS404(vrn)
-    val result = connector.getFinancialData(vrn).futureValue
-    result.status shouldBe 404
-    result.json shouldBe errorResponse("/payments-orchestrator/des/financial-data/vrn/2345678890")
+    val result = controller.getFinancialData(vrn)(request)
+    status(result) shouldBe 404
+    contentAsJson(result) shouldBe errorResponse("/payments-orchestrator/des/financial-data/vrn/2345678890")
   }
 
   "Get Financial data 404" in {
+    val request = FakeRequest("GET", "/payments-orchestrator/des/financial-data/vrn/2345678890")
     authOkWithEnrolments()
     DesStub.financialsNotFound()
-    val result = connector.getFinancialData(vrn).futureValue
-    result.status shouldBe 404
-    result.json shouldBe errorResponse("/payments-orchestrator/des/financial-data/vrn/2345678890")
+    val result = controller.getFinancialData(vrn)(request)
+    status(result) shouldBe 404
+    contentAsJson(result) shouldBe errorResponse("/payments-orchestrator/des/financial-data/vrn/2345678890")
   }
 
   "Get DD data" in {
+    val request = FakeRequest()
     authOkWithEnrolments()
     DesStub.ddOk(vrn)
-    val result = connector.getDDData(vrn).futureValue
-    result.status shouldBe 200
-    val dd = result.json.as[DirectDebitData]
-    dd shouldBe DesData.directDebitData
+    val result = controller.getDDData(vrn)(request)
+    status(result) shouldBe 200
+    contentAsJson(result).as[DirectDebitData] shouldBe DesData.directDebitData
   }
 
   "Get DD data no mandate" in {
+    val request = FakeRequest()
     authOkWithEnrolments()
     DesStub.ddOkNoMandate(vrn)
-    val result = connector.getDDData(vrn).futureValue
-    result.status shouldBe 200
-    val dd = result.json.as[DirectDebitData]
-    dd shouldBe DirectDebitData(None)
+    val result = controller.getDDData(vrn)(request)
+    status(result) shouldBe 200
+    contentAsJson(result).as[DirectDebitData] shouldBe DirectDebitData(None)
   }
 
   "Get DD data 404" in {
+    val request = FakeRequest("GET", "/payments-orchestrator/des/dd-data/vrn/2345678890")
     authOkWithEnrolments()
     DesStub.ddNotFound(vrn)
-    val result = connector.getDDData(vrn).futureValue
-    result.status shouldBe 404
-    result.json shouldBe errorResponse("/payments-orchestrator/des/dd-data/vrn/2345678890")
+    val result = controller.getDDData(vrn)(request)
+    status(result) shouldBe 404
+    contentAsJson(result) shouldBe errorResponse("/payments-orchestrator/des/dd-data/vrn/2345678890")
   }
 
   "Get repayment data" in {
+    val request = FakeRequest()
     authOkWithEnrolments()
     DesStub.repaymentDetailsOk(vrn)
-    val result = connector.getRepaymentDetails(vrn).futureValue
-    result.status shouldBe 200
-    val rd = result.json.as[Seq[RepaymentDetailData]]
-    rd shouldBe DesData.repaymentsDetail
+    val result = controller.getRepaymentDetails(vrn)(request)
+    status(result) shouldBe 200
+    contentAsJson(result).as[Seq[RepaymentDetailData]] shouldBe DesData.repaymentsDetail
   }
 
   "Get repayment data 404" in {
+    val request = FakeRequest("GET", "/payments-orchestrator/des/repayment-details/vrn/2345678890")
     authOkWithEnrolments()
     DesStub.repaymentDetailsNotFound(vrn)
-    val result = connector.getRepaymentDetails(vrn).futureValue
-    result.status shouldBe 404
-    result.json shouldBe errorResponse("/payments-orchestrator/des/repayment-details/vrn/2345678890")
+    val result = controller.getRepaymentDetails(vrn)(request)
+    status(result) shouldBe 404
+    contentAsJson(result) shouldBe errorResponse("/payments-orchestrator/des/repayment-details/vrn/2345678890")
   }
 
-  "Get repayment data, not authorised should result in 401" in {
+  "Get repayment data, not authorised should result in a failed result" in {
+    val request = FakeRequest()
     authFailed()
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 401
-    result.body should include("Session record not found")
+    val result = controller.getCustomerData(vrn)(request)
+    whenReady(result.failed){ ex =>
+      ex.getMessage should include("Session record not found")
+    }
   }
 
   "Get repayment data, logged in but no access to VRN" in {
+    val request = FakeRequest()
     authOkWithEnrolments(vrn = vrnFailed)
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 401
-    result.body should include("You do not have access to this vrn: 2345678890")
+    val result = controller.getCustomerData(vrn)(request)
+    status(result) shouldBe 401
+    contentAsString(result) should include("You do not have access to this vrn: 2345678890")
   }
 
   "Get repayment data, logged in but no enrolments" in {
+    val request = FakeRequest()
     authOkNoEnrolments()
-    val result = connector.getCustomerData(vrn).futureValue
-    result.status shouldBe 401
-    result.body should include("You do not have access to this service")
+    val result = controller.getCustomerData(vrn)(request)
+    status(result) shouldBe 401
+    contentAsString(result) should include("You do not have access to this service")
   }
 }

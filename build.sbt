@@ -1,6 +1,7 @@
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import wartremover.{Wart, wartremoverErrors, wartremoverExcluded}
+import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
+
 
 val scalaV = "2.12.12"
 scalaVersion := scalaV

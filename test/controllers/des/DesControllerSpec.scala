@@ -67,7 +67,7 @@ class DesControllerSpec extends ItSpec {
     contentAsJson(result).as[FinancialData] shouldBe DesData.financialData
   }
 
-  "Get Financial data (multiple)" in {
+  "Get Financial data  (multiple)" in {
     val request = FakeRequest()
     authOkWithEnrolments()
     financialsOkMultiple(vrn)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ package support
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{FreeSpecLike, Matchers}
+import org.scalatest.freespec.AnyFreeSpecLike
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
 import play.api.Application
 import play.api.inject.Injector
@@ -48,7 +49,7 @@ import scala.concurrent.ExecutionContext
  */
 
 trait ItSpec
-  extends FreeSpecLike
+  extends AnyFreeSpecLike
   with GuiceOneServerPerTest
   with WireMockSupport
   with Matchers

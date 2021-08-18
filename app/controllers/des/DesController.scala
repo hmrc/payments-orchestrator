@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package controllers.des
 
 import connectors.des.DesConnector
 import controllers.action.Actions
+
 import javax.inject.{Inject, Singleton}
 import model.des.Transaction
 import model.{ChargeType, Vrn}
@@ -26,10 +27,10 @@ import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
 import play.api.mvc.Request
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.ExecutionContext
 
@@ -43,8 +44,10 @@ class DesController @Inject() (
 
   extends BackendController(cc) {
 
+  private lazy val logger = Logger(this.getClass)
+
   def getFinancialData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    Logger.debug("getFinancialData called")
+    logger.debug("getFinancialData called")
     desConnector.getFinancialData(vrn).map { maybeFinancialDetails =>
       maybeFinancialDetails.fold(notFound: Result) { fd =>
         val filtered = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
@@ -58,8 +61,8 @@ class DesController @Inject() (
   private def isCreditOrDebitChargeType(transaction: Transaction): Boolean = transaction.chargeType == ChargeType.vatReturnCreditCharge || transaction.chargeType == ChargeType.vatReturnDebitCharge
 
   def getCustomerData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    Logger.debug("getCustomerData called")
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    logger.debug("getCustomerData called")
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     desConnector.getCustomerData(vrn).map{
       case Some(cd) => Ok(toJson(cd))
       case None     => notFound
@@ -67,7 +70,7 @@ class DesController @Inject() (
   }
 
   def getDDData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    Logger.debug("getDDData called")
+    logger.debug("getDDData called")
     desConnector.getDDData(vrn).map{
       case Some(dd) => Ok(toJson(dd))
       case None     => notFound
@@ -75,7 +78,7 @@ class DesController @Inject() (
   }
 
   def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
-    Logger.debug("getRepaymentDetails called")
+    logger.debug("getRepaymentDetails called")
     desConnector.getRepaymentDetails(vrn).map{
       case Some(rd) => Ok(toJson(rd))
       case None     => notFound

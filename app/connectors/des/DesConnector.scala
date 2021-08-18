@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,21 @@
 package connectors.des
 
 import java.time.LocalDate
-
 import javax.inject.{Inject, Singleton}
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import play.api.{Configuration, Logger}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
-import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpClient, configuration: Configuration)(implicit ec: ExecutionContext) {
+
+  private lazy val logger = Logger(this.getClass)
 
   private val serviceURL = servicesConfig.baseUrl("des")
   private val authorizationToken = configuration.get[String]("microservice.services.des.authorizationToken")
@@ -48,36 +48,36 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
     .withExtraHeaders("Environment" -> serviceEnvironment, "OriginatorID" -> "MDTP")
 
   def getFinancialData(vrn: Vrn): Future[Option[FinancialData]] = {
-    Logger.debug(s"Calling des api 1166 for vrn $vrn")
+    logger.debug(s"Calling des api 1166 for vrn $vrn")
     val now = LocalDate.now()
     val aYearAgo = LocalDate.now().minusYears(1)
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=$aYearAgo&dateTo=$now"
-    Logger.debug(s"""Calling des api 1166 with url $getFinancialURL""")
+    logger.debug(s"""Calling des api 1166 with url $getFinancialURL""")
     httpClient.GET[Option[FinancialData]](getFinancialURL)
   }
 
   def getCustomerData(vrn: Vrn): Future[Option[CustomerInformation]] = {
-    Logger.debug(s"Calling des api 1363 for vrn $vrn")
+    logger.debug(s"Calling des api 1363 for vrn $vrn")
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getCustomerURL: String = s"$serviceURL$customerUrl/${vrn.value}/information"
-    Logger.debug(s"""Calling des api 1363 with url $getCustomerURL""")
+    logger.debug(s"""Calling des api 1363 with url $getCustomerURL""")
     httpClient.GET[Option[CustomerInformation]](getCustomerURL)
   }
 
   def getDDData(vrn: Vrn): Future[Option[DirectDebitData]] = {
-    Logger.debug(s"Calling des api 1396 for vrn $vrn")
+    logger.debug(s"Calling des api 1396 for vrn $vrn")
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getDDUrl: String = s"$serviceURL$ddUrl/${vrn.value}"
-    Logger.debug(s"""Calling des api 1396 with url $getDDUrl""")
+    logger.debug(s"""Calling des api 1396 with url $getDDUrl""")
     httpClient.GET[Option[DirectDebitData]](getDDUrl)
   }
 
   def getRepaymentDetails(vrn: Vrn): Future[Option[Seq[RepaymentDetailData]]] = {
-    Logger.debug(s"Calling des api 1533 for vrn $vrn")
+    logger.debug(s"Calling des api 1533 for vrn $vrn")
     implicit val hc: HeaderCarrier = desHeaderCarrier1533
     val getRDUrl: String = s"$serviceURL$repaymentDetailsUrl/${vrn.value}"
-    Logger.debug(s"""Calling des api 1533 with url $getRDUrl""")
+    logger.debug(s"""Calling des api 1533 with url $getRDUrl""")
     httpClient.GET[Option[Seq[RepaymentDetailData]]](getRDUrl)
   }
 }

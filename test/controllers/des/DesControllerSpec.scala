@@ -148,7 +148,7 @@ class DesControllerSpec extends ItSpec {
     contentAsJson(result) shouldBe errorResponse("/payments-orchestrator/des/repayment-details/vrn/2345678890")
   }
 
-  "Get repayment data, not authorised should result in a failed result" in {
+  "Get repayment data, not authorised should result in a failed future result" in {
     val request = FakeRequest()
     authFailed()
     val result = controller.getCustomerData(vrn)(request)

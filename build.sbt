@@ -19,6 +19,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(WartRemoverSettings.wartRemoverError)
   .settings(WartRemoverSettings.wartRemoverWarning)
   .settings(wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference))
+  .settings(scalacOptions in Compile -= "utf8")
   .settings(wartremoverExcluded ++=
     routes.in(Compile).value ++
       (baseDirectory.value / "it").get ++

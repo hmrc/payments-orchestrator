@@ -39,6 +39,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   private val customerUrl = configuration.get[String]("microservice.services.des.customer-url")
   private val ddUrl = configuration.get[String]("microservice.services.des.dd-url")
   private val repaymentDetailsUrl = configuration.get[String]("microservice.services.des.repaymentdetails-url")
+  private val headers = Seq("Authorization" -> s"Bearer $authorizationToken", "Environment" -> serviceEnvironment)
 
   private val desHeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer $authorizationToken")))
     .withExtraHeaders("Environment" -> serviceEnvironment)
@@ -53,7 +54,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=$aYearAgo&dateTo=$now"
     logger.debug(s"""Calling des api 1166 with url $getFinancialURL""")
-    httpClient.GET[Option[FinancialData]](getFinancialURL)
+    httpClient.GET[Option[FinancialData]](getFinancialURL, headers = headers)
   }
 
   def getCustomerData(vrn: Vrn): Future[Option[CustomerInformation]] = {
@@ -61,7 +62,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getCustomerURL: String = s"$serviceURL$customerUrl/${vrn.value}/information"
     logger.debug(s"""Calling des api 1363 with url $getCustomerURL""")
-    httpClient.GET[Option[CustomerInformation]](getCustomerURL)
+    httpClient.GET[Option[CustomerInformation]](getCustomerURL, headers = headers)
   }
 
   def getDDData(vrn: Vrn): Future[Option[DirectDebitData]] = {
@@ -69,7 +70,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getDDUrl: String = s"$serviceURL$ddUrl/${vrn.value}"
     logger.debug(s"""Calling des api 1396 with url $getDDUrl""")
-    httpClient.GET[Option[DirectDebitData]](getDDUrl)
+    httpClient.GET[Option[DirectDebitData]](getDDUrl, headers = headers)
   }
 
   def getRepaymentDetails(vrn: Vrn): Future[Option[Seq[RepaymentDetailData]]] = {
@@ -77,6 +78,6 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
     implicit val hc: HeaderCarrier = desHeaderCarrier1533
     val getRDUrl: String = s"$serviceURL$repaymentDetailsUrl/${vrn.value}"
     logger.debug(s"""Calling des api 1533 with url $getRDUrl""")
-    httpClient.GET[Option[Seq[RepaymentDetailData]]](getRDUrl)
+    httpClient.GET[Option[Seq[RepaymentDetailData]]](getRDUrl, headers = headers)
   }
 }

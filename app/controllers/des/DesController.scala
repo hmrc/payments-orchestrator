@@ -79,8 +79,10 @@ class DesController @Inject() (
   def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     logger.debug("getRepaymentDetails called")
     desConnector.getRepaymentDetails(vrn).map{
-      case Some(rd) => Ok(toJson(rd))
-      case None     => notFound
+      case Some(rd) =>
+        logger.warn(s"KNOZ: DES-data VRN:${vrn.value} " + rd.mkString("", ", ", ""))
+        Ok(toJson(rd))
+      case None => notFound
     }
   }
 

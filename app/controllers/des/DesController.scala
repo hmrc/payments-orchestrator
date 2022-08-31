@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,10 @@ class DesController @Inject() (
   def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     logger.debug("getRepaymentDetails called")
     desConnector.getRepaymentDetails(vrn).map{
-      case Some(rd) => Ok(toJson(rd))
-      case None     => notFound
+      case Some(rd) =>
+        logger.warn(s"KNOZ: DES-data VRN:${vrn.value} " + rd.mkString("", ", ", ""))
+        Ok(toJson(rd))
+      case None => notFound
     }
   }
 

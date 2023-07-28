@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package model.des
 
 import play.api.libs.json._
+
+import java.time.LocalDate
 
 final case class CustomerInformation(approvedInformation: Option[ApprovedInformation], inFlightInformation: Option[InFlightInformation]) {
   val bankDetailsChangeIndicatorExists: Option[Boolean] =
@@ -50,7 +52,12 @@ object ChangeIndicators {
   implicit val format: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
 }
 
-final case class ApprovedInformation(customerDetails: Option[CustomerDetails], bankDetails: Option[BankDetails], PPOB: Option[PPOB])
+final case class ApprovedInformation(
+    customerDetails: Option[CustomerDetails],
+    bankDetails:     Option[BankDetails],
+    PPOB:            Option[PPOB],
+    deregistration:  Option[Deregistration]  = None
+)
 
 object ApprovedInformation {
   implicit val format: OFormat[ApprovedInformation] = Json.format[ApprovedInformation]
@@ -66,6 +73,17 @@ final case class PPOB(address: Option[Address])
 
 object PPOB {
   implicit val format: OFormat[PPOB] = Json.format[PPOB]
+}
+
+final case class Deregistration(
+    deregistrationReason:     Option[String],
+    effectDateOfCancellation: Option[LocalDate],
+    lastReturnDueDate:        Option[LocalDate]
+) {
+}
+
+object Deregistration {
+  implicit val format: OFormat[Deregistration] = Json.format[Deregistration]
 }
 
 final case class Address(

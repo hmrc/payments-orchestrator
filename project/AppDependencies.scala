@@ -16,5 +16,5 @@ object AppDependencies {
     "com.github.tomakehurst" % "wiremock-jre8" % "2.27.2",
     "com.typesafe.play" %% "play-test" % "2.8.8",
     "com.vladsch.flexmark" % "flexmark-all" % "0.35.10"
-  )
+  ).map(_ % Test)
 }

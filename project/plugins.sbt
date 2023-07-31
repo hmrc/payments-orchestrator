@@ -10,3 +10,5 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.1")
 addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.13")
 addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.8.3")
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.3")
+addDependencyTreePlugin

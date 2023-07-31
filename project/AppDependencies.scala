@@ -3,9 +3,12 @@ import play.sbt.PlayImport.ws
 import sbt._
 
 object AppDependencies {
+
+  val boostrapVersion = "5.3.0"
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "5.3.0"
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % boostrapVersion,
+    "uk.gov.hmrc" %% "bootstrap-test-play-28" % boostrapVersion
   )
   val test = Seq(
     "org.scalatest" %% "scalatest" % "3.1.0",

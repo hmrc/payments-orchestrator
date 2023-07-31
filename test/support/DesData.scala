@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,17 @@ object DesData {
     Option(1),
     100.02
   ))
+
+  val deregistrationData: Deregistration = Deregistration(
+    deregistrationReason     = Some("0001"),
+    effectDateOfCancellation = Some(LocalDate.parse("2001-01-01")),
+    lastReturnDueDate        = Some(LocalDate.parse("2001-01-01"))
+  )
+
+  val approvedCustomerInformationDeregistered: CustomerInformation = CustomerInformation(
+    Some(approvedInformation.copy(deregistration = Some(deregistrationData))),
+    None
+  )
 
   //language=JSON
   val repaymentDetailJson: JsValue = Json.parse(
@@ -110,6 +121,37 @@ object DesData {
                    "countryCode":"GB"
                 }
              }
+          }
+       }""".stripMargin)
+
+  val approvedInformationDeregisteredJson: JsValue = Json.parse(
+    s"""
+       {
+          "approvedInformation":{
+             "customerDetails": {
+                "welshIndicator": true,
+                "isPartialMigration": false
+             },
+             "bankDetails":{
+                "accountHolderName":"Account holder",
+                "bankAccountNumber":"11112222",
+                "sortCode":"667788"
+             },
+             "PPOB":{
+                "address":{
+                   "line1":"VAT PPOB Line1",
+                   "line2":"VAT PPOB Line2",
+                   "line3":"VAT PPOB Line3",
+                   "line4":"VAT PPOB Line4",
+                   "postCode":"TF3 4ER",
+                   "countryCode":"GB"
+                }
+             },
+             "deregistration":{
+                "deregistrationReason":"0001",
+                "effectDateOfCancellation":"2001-01-01",
+                "lastReturnDueDate":"2001-01-01"
+            }
           }
        }""".stripMargin)
 

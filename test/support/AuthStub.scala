@@ -23,6 +23,7 @@ import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model.Vrn
 import support.DesData.vrn
 import support.WireMockSupport.wireMockBaseUrlAsString
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 
 object AuthStub {
   private val oid: String = "556737e15500005500eaf68f"
@@ -54,6 +55,7 @@ object AuthStub {
                },
                "lastUpdated":"2016-06-20T10:44:29.634Z",
                "credentialStrength":"strong",
+               "BearerToken":"token",
                "confidenceLevel":50,
                "userDetailsLink":"$wireMockBaseUrlAsString/user-details/id/$oid",
                "levelOfAssurance":"1",

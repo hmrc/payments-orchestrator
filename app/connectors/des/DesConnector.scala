@@ -48,17 +48,17 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
     .withExtraHeaders("Environment" -> serviceEnvironment, "OriginatorID" -> "MDTP")
 
   def getFinancialData(vrn: Vrn): Future[Option[FinancialData]] = {
-    logger.debug(s"Calling des api 1166 for vrn $vrn")
+    logger.debug(s"Calling des api 1166 for vrn ${vrn.toString}")
     val now = LocalDate.now()
     val aYearAgo = LocalDate.now().minusYears(1)
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=$aYearAgo&dateTo=$now"
+    val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=${aYearAgo.toString}&dateTo=${now.toString}"
     logger.debug(s"""Calling des api 1166 with url $getFinancialURL""")
     httpClient.GET[Option[FinancialData]](getFinancialURL, headers = headers)
   }
 
   def getCustomerData(vrn: Vrn): Future[Option[CustomerInformation]] = {
-    logger.debug(s"Calling des api 1363 for vrn $vrn")
+    logger.debug(s"Calling des api 1363 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getCustomerURL: String = s"$serviceURL$customerUrl/${vrn.value}/information"
     logger.debug(s"""Calling des api 1363 with url $getCustomerURL""")
@@ -66,7 +66,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   }
 
   def getDDData(vrn: Vrn): Future[Option[DirectDebitData]] = {
-    logger.debug(s"Calling des api 1396 for vrn $vrn")
+    logger.debug(s"Calling des api 1396 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
     val getDDUrl: String = s"$serviceURL$ddUrl/${vrn.value}"
     logger.debug(s"""Calling des api 1396 with url $getDDUrl""")
@@ -74,7 +74,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
   }
 
   def getRepaymentDetails(vrn: Vrn): Future[Option[Seq[RepaymentDetailData]]] = {
-    logger.debug(s"Calling des api 1533 for vrn $vrn")
+    logger.debug(s"Calling des api 1533 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier1533
     val getRDUrl: String = s"$serviceURL$repaymentDetailsUrl/${vrn.value}"
     logger.debug(s"""Calling des api 1533 with url $getRDUrl""")

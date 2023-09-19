@@ -36,18 +36,23 @@ final case class CustomerInformation(approvedInformation: Option[ApprovedInforma
     } yield pPOBDetails
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object CustomerInformation {
   implicit val format: OFormat[CustomerInformation] = Json.format[CustomerInformation]
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 final case class InFlightInformation(changeIndicators: Option[ChangeIndicators])
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object InFlightInformation {
   implicit val format: OFormat[InFlightInformation] = Json.format[InFlightInformation]
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 final case class ChangeIndicators(bankDetails: Option[Boolean], PPOBDetails: Option[Boolean])
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object ChangeIndicators {
   implicit val format: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
 }
@@ -59,18 +64,21 @@ final case class ApprovedInformation(
     deregistration:  Option[Deregistration]  = None
 )
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object ApprovedInformation {
   implicit val format: OFormat[ApprovedInformation] = Json.format[ApprovedInformation]
 }
 
 final case class CustomerDetails(welshIndicator: Option[Boolean], isPartialMigration: Option[Boolean])
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object CustomerDetails {
   implicit val format: OFormat[CustomerDetails] = Json.format[CustomerDetails]
 }
 
 final case class PPOB(address: Option[Address])
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object PPOB {
   implicit val format: OFormat[PPOB] = Json.format[PPOB]
 }
@@ -82,6 +90,7 @@ final case class Deregistration(
 ) {
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object Deregistration {
   implicit val format: OFormat[Deregistration] = Json.format[Deregistration]
 }
@@ -95,12 +104,14 @@ final case class Address(
     countryCode: Option[String]
 )
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object Address {
   implicit val format: OFormat[Address] = Json.format[Address]
 }
 
 final case class BankDetails(accountHolderName: Option[String], bankAccountNumber: Option[String], sortCode: Option[String])
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object BankDetails {
   implicit val format: OFormat[BankDetails] = Json.format[BankDetails]
 }

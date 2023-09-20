@@ -32,7 +32,6 @@ object  WartRemoverSettings {
       Wart.OptionPartial,
       Wart.Recursion,
       Wart.Return,
-      Wart.TraversableOps,
       Wart.TryPartial,
       Wart.Var,
       Wart.While)

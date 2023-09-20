@@ -31,7 +31,7 @@ class AuthenticatedAction @Inject() (af: AuthorisedFunctions, cc: MessagesContro
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
 
-    af.authorised.retrieve(Retrievals.allEnrolments) { enrolments =>
+    af.authorised().retrieve(Retrievals.allEnrolments) { enrolments =>
       block(new AuthenticatedRequest(request, enrolments))
     }(hc, executionContext)
   }

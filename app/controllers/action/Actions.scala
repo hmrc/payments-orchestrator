@@ -27,6 +27,7 @@ class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathRespon
 
   private lazy val logger = Logger(this.getClass)
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   def securedAction(vrn: Vrn): ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction andThen validateVrn(vrn)
 
   private def validateVrn(vrn: Vrn): ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] =

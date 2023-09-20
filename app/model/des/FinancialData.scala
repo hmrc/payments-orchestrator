@@ -30,6 +30,7 @@ final case class FinancialData(
     processingDate:        String,
     financialTransactions: Seq[Transaction])
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object FinancialData {
   implicit val format: OFormat[FinancialData] = Json.format[FinancialData]
 }
@@ -38,6 +39,7 @@ final case class Transaction(
     chargeType: String,
     periodKey:  Option[String])
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 object Transaction {
   implicit val format: OFormat[Transaction] = Json.format[Transaction]
 }

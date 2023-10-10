@@ -2,7 +2,7 @@ import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSetting
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 
-val scalaV = "2.13.8"
+val scalaV = "2.13.12"
 scalaVersion := scalaV
 
 lazy val microservice = Project(appName, file("."))

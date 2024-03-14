@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model.Vrn
+import play.api.libs.json.Json
 import support.DesData.vrn
 import support.WireMockSupport.wireMockBaseUrlAsString
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
@@ -106,7 +107,21 @@ object AuthStub {
              }
        """.stripMargin)))
 
-  def authOkWithSeveralEnrolments(vrnList: List[Vrn], enrolments: List[String]): StubMapping =
+  def authOkWithSeveralEnrolments(vrnList: List[(Vrn, String)]): StubMapping = {
+
+    val mappedList = vrnList.map{
+      case (vrn, key) => s"""{
+                               |"key": "$key",
+                               |"identifiers": [
+                               | {
+                               |   "key": "VRN",
+                               |   "value": "${vrn.value}"
+                               | }
+                               |],
+                               |"state": "Activated"
+                               |}""".stripMargin
+    }.mkString(",")
+
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(200)
@@ -132,38 +147,9 @@ object AuthStub {
                "groupIdentifier": "groupId",
                "affinityGroup": "Individual",
                "allEnrolments": [
-                        {
-                          "key": "${enrolments.head}",
-                          "identifiers": [
-                            {
-                              "key": "VRN",
-                              "value": "${vrnList.head.value}"
-                            }
-                          ],
-                          "state": "Activated"
-                        },
-                        {
-                          "key": "${enrolments(1)}",
-                          "identifiers": [
-                            {
-                              "key": "VRN",
-                              "value": "${vrnList(1).value}"
-                            }
-                          ],
-                          "state": "Activated"
-                        },
-                        {
-                          "key": "${enrolments(2)}",
-                          "identifiers": [
-                            {
-                              "key": "VRN",
-                              "value": "${vrnList(2).value}"
-                            }
-                          ],
-                          "state": "Activated"
-                        }
-
-                      ]
+               $mappedList
+               ]
              }
        """.stripMargin)))
+  }
 }

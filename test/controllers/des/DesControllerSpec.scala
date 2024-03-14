@@ -42,7 +42,8 @@ class DesControllerSpec extends ItSpec {
   val controller: DesController = injector.instanceOf[DesController]
 
   "Get Customer Information" in {
-    authOkWithSeveralEnrolments(vrnList, keyList)
+    println(authOkWithSeveralEnrolments(List(vatVarVrn -> vatVarEnrolmentKey, mtdVrn -> mtdVatEnrolmentKey, vatDecVrn -> vatDecEnrolmentKey)).toString)
+    authOkWithSeveralEnrolments(List(vatVarVrn -> vatVarEnrolmentKey, mtdVrn -> mtdVatEnrolmentKey, vatDecVrn -> vatDecEnrolmentKey))
     customerDataOkWithBankDetails(mtdVrn)
     val response = controller.getCustomerData(mtdVrn)(fakeRequest("POST", ""))
 

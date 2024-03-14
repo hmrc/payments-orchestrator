@@ -41,10 +41,10 @@ class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathRespon
   private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] = {
     val enrolmentList = request.enrolmentsVrn
     if (enrolmentList.nonEmpty) {
-      if (enrolmentList.flatMap(_.toSet).exists(_.vrn == vrn)) {
+      if (enrolmentList.exists(_.vrn == vrn)) {
         Future.successful(Right(request))
       } else {
-        logger.debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${enrolmentList.flatMap(_.toSet).head.vrn.value}""")
+        logger.debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${enrolmentList.head.vrn.value}""")
         implicit val req: AuthenticatedRequest[_] = request
         Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
       }

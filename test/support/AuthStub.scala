@@ -105,4 +105,65 @@ object AuthStub {
                       ]
              }
        """.stripMargin)))
+
+  def authOkWithSeveralEnrolments(vrnList: List[Vrn], enrolments: List[String]): StubMapping =
+    stubFor(post(urlEqualTo("/auth/authorise"))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          s"""
+             {
+               "new-session":"/auth/oid/$oid/session",
+               "enrolments":"/auth/oid/$oid/enrolments",
+               "uri":"/auth/oid/$oid",
+               "loggedInAt":"2016-06-20T10:44:29.634Z",
+               "optionalCredentials":{
+                 "providerId": "12345",
+                 "providerType": "GovernmentGateway"
+               },
+               "accounts":{
+               },
+               "lastUpdated":"2016-06-20T10:44:29.634Z",
+               "credentialStrength":"strong",
+               "confidenceLevel":50,
+               "userDetailsLink":"$wireMockBaseUrlAsString/user-details/id/$oid",
+               "levelOfAssurance":"1",
+               "previouslyLoggedInAt":"2016-06-20T09:48:37.112Z",
+               "groupIdentifier": "groupId",
+               "affinityGroup": "Individual",
+               "allEnrolments": [
+                        {
+                          "key": "${enrolments.head}",
+                          "identifiers": [
+                            {
+                              "key": "VRN",
+                              "value": "${vrnList.head.value}"
+                            }
+                          ],
+                          "state": "Activated"
+                        },
+                        {
+                          "key": "${enrolments(1)}",
+                          "identifiers": [
+                            {
+                              "key": "VRN",
+                              "value": "${vrnList(1).value}"
+                            }
+                          ],
+                          "state": "Activated"
+                        },
+                        {
+                          "key": "${enrolments(2)}",
+                          "identifiers": [
+                            {
+                              "key": "VRN",
+                              "value": "${vrnList(2).value}"
+                            }
+                          ],
+                          "state": "Activated"
+                        }
+
+                      ]
+             }
+       """.stripMargin)))
 }

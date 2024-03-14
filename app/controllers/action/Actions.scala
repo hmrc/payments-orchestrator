@@ -38,19 +38,20 @@ class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathRespon
       override protected def executionContext: ExecutionContext = ec
     }
 
-  private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] =
-    request.enrolmentsVrn match {
-      case Some(typedVrn) =>
-        if (typedVrn.vrn.value == vrn.value) {
-          Future.successful(Right(request))
-        } else {
-          logger.debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${typedVrn.vrn.value}""")
-          implicit val req: AuthenticatedRequest[_] = request
-          Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
-        }
-      case None =>
-        logger.debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
+  private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] = {
+    val enrolmentList = request.enrolmentsVrn
+    if (enrolmentList.nonEmpty) {
+      if (enrolmentList.exists(_.vrn == vrn)) {
+        Future.successful(Right(request))
+      } else {
+        logger.debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${enrolmentList.head.vrn.value}""")
         implicit val req: AuthenticatedRequest[_] = request
-        Future.successful(Left(unhappyPathResponses.unauthorised))
+        Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
+      }
+    } else {
+      logger.debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
+      implicit val req: AuthenticatedRequest[_] = request
+      Future.successful(Left(unhappyPathResponses.unauthorised))
     }
+  }
 }

@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model.Vrn
+import play.api.libs.json.Json
 import support.DesData.vrn
 import support.WireMockSupport.wireMockBaseUrlAsString
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
@@ -105,4 +106,50 @@ object AuthStub {
                       ]
              }
        """.stripMargin)))
+
+  def authOkWithSeveralEnrolments(vrnList: List[(Vrn, String)]): StubMapping = {
+
+    val mappedList = vrnList.map{
+      case (vrn, key) => s"""{
+                               |"key": "$key",
+                               |"identifiers": [
+                               | {
+                               |   "key": "VRN",
+                               |   "value": "${vrn.value}"
+                               | }
+                               |],
+                               |"state": "Activated"
+                               |}""".stripMargin
+    }.mkString(",")
+
+    stubFor(post(urlEqualTo("/auth/authorise"))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          s"""
+             {
+               "new-session":"/auth/oid/$oid/session",
+               "enrolments":"/auth/oid/$oid/enrolments",
+               "uri":"/auth/oid/$oid",
+               "loggedInAt":"2016-06-20T10:44:29.634Z",
+               "optionalCredentials":{
+                 "providerId": "12345",
+                 "providerType": "GovernmentGateway"
+               },
+               "accounts":{
+               },
+               "lastUpdated":"2016-06-20T10:44:29.634Z",
+               "credentialStrength":"strong",
+               "confidenceLevel":50,
+               "userDetailsLink":"$wireMockBaseUrlAsString/user-details/id/$oid",
+               "levelOfAssurance":"1",
+               "previouslyLoggedInAt":"2016-06-20T09:48:37.112Z",
+               "groupIdentifier": "groupId",
+               "affinityGroup": "Individual",
+               "allEnrolments": [
+               $mappedList
+               ]
+             }
+       """.stripMargin)))
+  }
 }

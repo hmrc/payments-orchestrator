@@ -17,12 +17,12 @@
 package controllers.des
 
 import akka.util.Timeout
+import model.EnrolmentKeys._
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import play.api.libs.json.Json
-import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, contentAsString, status}
-import support.AuthStub.{authFailed, authOkNoEnrolments, authOkWithEnrolments}
+import support.AuthStub.{authFailed, authOkNoEnrolments, authOkWithEnrolments, authOkWithSeveralEnrolments}
 import support.DesData.vrn
 import support.DesStub.{customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple, financialsOkSingle}
 import support._
@@ -32,14 +32,20 @@ import java.util.concurrent.TimeUnit
 
 class DesControllerSpec extends ItSpec {
   private val vrnFailed = Vrn("2345678891")
+  private val mtdVrn: Vrn = Vrn("2345678890")
+  private val vatDecVrn: Vrn = Vrn("1345678890")
+  private val vatVarVrn: Vrn = Vrn("3345678890")
+  private val vrnList: List[Vrn] = List(vatVarVrn, mtdVrn, vatDecVrn)
+  private val keyList: List[String] = List(vatVarEnrolmentKey, mtdVatEnrolmentKey, vatDecEnrolmentKey)
   implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
 
   val controller: DesController = injector.instanceOf[DesController]
 
   "Get Customer Information" in {
-    authOkWithEnrolments()
-    customerDataOkWithBankDetails(vrn)
-    val response = controller.getCustomerData(vrn)(fakeRequest("POST", ""))
+    authOkWithSeveralEnrolments(List(vatVarVrn -> vatVarEnrolmentKey, mtdVrn -> mtdVatEnrolmentKey, vatDecVrn -> vatDecEnrolmentKey))
+    customerDataOkWithBankDetails(mtdVrn)
+    val response = controller.getCustomerData(mtdVrn)(fakeRequest("POST", ""))
+
     status(response) shouldBe 200
     contentAsJson(response).as[CustomerInformation] shouldBe DesData.customerInformation
   }

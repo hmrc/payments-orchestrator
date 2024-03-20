@@ -13,7 +13,7 @@ object AppDependencies {
     "org.scalatest"           %% "scalatest"                        % "3.2.17",
     "org.scalatestplus.play"  %% "scalatestplus-play"               % "5.1.0",
     "org.wiremock"            %  "wiremock-standalone"              % "3.2.0",
-    "com.typesafe.play"       %% "play-test"                        % "2.8.20",
+    "org.playframework"       %% "play-test"                        % "2.8.20",
     "com.vladsch.flexmark"    %  "flexmark-all"                     % "0.64.8",
     "uk.gov.hmrc"             %% "bootstrap-test-play-30"           % boostrapVersion
   ).map(_ % Test)

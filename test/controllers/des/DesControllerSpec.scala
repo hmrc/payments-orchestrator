@@ -16,7 +16,7 @@
 
 package controllers.des
 
-import akka.util.Timeout
+import org.apache.pekko.util.Timeout
 import model.EnrolmentKeys._
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}

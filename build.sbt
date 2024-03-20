@@ -28,7 +28,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 8418)
   .settings(scalaSettings *)
   .settings(defaultSettings() *)
-  .settings(integrationTestSettings())
+  .settings(libraryDependencies ++= AppDependencies.test)
   .configs(IntegrationTest)
   .settings(
     routesImport ++= Seq(

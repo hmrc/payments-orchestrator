@@ -2,13 +2,13 @@ import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSetting
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 
-val scalaV = "2.13.12"
-scalaVersion := scalaV
+scalaVersion := "2.13.12"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
   .settings(
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencySchemes ++= Seq("org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always),
     retrieveManaged := false,
     routesGenerator := InjectedRoutesGenerator,
     update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false)
@@ -28,7 +28,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 8418)
   .settings(scalaSettings *)
   .settings(defaultSettings() *)
-  .settings(integrationTestSettings())
   .configs(IntegrationTest)
   .settings(
     routesImport ++= Seq(

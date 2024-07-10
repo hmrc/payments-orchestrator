@@ -48,6 +48,7 @@ class DesController @Inject() (
   def getFinancialData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     logger.debug("getFinancialData called")
     desConnector.getFinancialData(vrn).map { maybeFinancialDetails =>
+      println("frick" + maybeFinancialDetails.toString)
       maybeFinancialDetails.fold(notFound: Result) { fd =>
         val filtered = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
 

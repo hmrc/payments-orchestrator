@@ -38,8 +38,10 @@ object DesData {
 
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
 
+  private val items: Seq[Item] = Seq(Item(Some(LocalDate.parse("2018-03-31"))))
+
   val financialData: FinancialData =
-    FinancialData("VRN", vrn.value, "VATC", "2019-08-20T10:44:05Z", Seq(Transaction("VAT Return Credit Charge", Option("18AC"))))
+    FinancialData("VRN", vrn.value, "VATC", "2019-08-20T10:44:05Z", Seq(Transaction("VAT Return Credit Charge", Option("18AC"), Option(items))))
 
   val repaymentsDetail: Seq[RepaymentDetailData] = Seq(RepaymentDetailData(
     LocalDate.parse("2001-01-01"),
@@ -166,7 +168,12 @@ object DesData {
           "financialTransactions":[
              {
                 "chargeType" : "VAT Return Credit Charge",
-                "periodKey":"18AC"
+                "periodKey":"18AC",
+                "items": [
+                  {
+                    "clearingDate":"2018-03-31"
+                  }
+                ]
              }
           ]
        }

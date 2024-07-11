@@ -16,7 +16,9 @@
 
 package model.des
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json, OFormat}
+
+import java.time.LocalDate
 
 /**
  * Case class representing a small subset of the DES 1166 API response
@@ -37,9 +39,17 @@ object FinancialData {
 
 final case class Transaction(
     chargeType: String,
-    periodKey:  Option[String])
+    periodKey:  Option[String],
+    items:      Option[Seq[Item]])
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 object Transaction {
   implicit val format: OFormat[Transaction] = Json.format[Transaction]
+}
+
+final case class Item(clearingDate: Option[LocalDate])
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+object Item {
+  implicit val format: OFormat[Item] = Json.format[Item]
 }

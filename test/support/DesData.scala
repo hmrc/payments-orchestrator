@@ -28,13 +28,13 @@ object DesData {
   private val approvedInformation =
     ApprovedInformation(
       Some(CustomerDetails(Some(true), Some(false))),
-      Some(BankDetails(Some("Account holder"), Some("11112222"), Some("667788"))),
+      Some(BankDetails(Some("Account holder"), Some("11112222"), Some("667788"), None)),
       Some(PPOB(Some(Address(Some("VAT PPOB Line1"), Some("VAT PPOB Line2"), Some("VAT PPOB Line3"), Some("VAT PPOB Line4"), Some("TF3 4ER"), Some("GB"))))))
 
   val approvedCustomerInformation: CustomerInformation = CustomerInformation(Some(approvedInformation), None)
 
   val customerInformation: CustomerInformation =
-    CustomerInformation(Some(approvedInformation), Some(InFlightInformation(Some(ChangeIndicators(Some(true), Some(false))))))
+    CustomerInformation(Some(approvedInformation), Some(InFlightInformation(Some(ChangeIndicators(Some(true), Some(false))), Some(InFlightChanges(Some(BankDetails(Some("Account holder"), Some("11112222"), Some("667788"), Some(FormInformation(Some("2019-03-04"))))))))))
 
   val directDebitData: DirectDebitData = DirectDebitData(Some(List(DirectDebitDetails("Tester Surname", "404784", "70872490"))))
 

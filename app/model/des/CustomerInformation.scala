@@ -42,7 +42,7 @@ object CustomerInformation {
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-final case class InFlightInformation(changeIndicators: Option[ChangeIndicators])
+final case class InFlightInformation(changeIndicators: Option[ChangeIndicators], inFlightChanges: Option[InFlightChanges])
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 object InFlightInformation {
@@ -55,6 +55,19 @@ final case class ChangeIndicators(bankDetails: Option[Boolean], PPOBDetails: Opt
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 object ChangeIndicators {
   implicit val format: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
+}
+
+final case class InFlightChanges(bankDetails: Option[BankDetails])
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+object InFlightChanges {
+  implicit val format: OFormat[InFlightChanges] = Json.format[InFlightChanges]
+}
+
+final case class FormInformation(dateReceived: Option[String])
+
+object FormInformation {
+  implicit val format: OFormat[FormInformation] = Json.format[FormInformation]
 }
 
 final case class ApprovedInformation(
@@ -109,7 +122,7 @@ object Address {
   implicit val format: OFormat[Address] = Json.format[Address]
 }
 
-final case class BankDetails(accountHolderName: Option[String], bankAccountNumber: Option[String], sortCode: Option[String])
+final case class BankDetails(accountHolderName: Option[String], bankAccountNumber: Option[String], sortCode: Option[String], formInformation: Option[FormInformation])
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 object BankDetails {

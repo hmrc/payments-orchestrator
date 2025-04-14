@@ -2,7 +2,7 @@ import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSetting
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 
-scalaVersion := "2.13.12"
+scalaVersion := "2.13.16"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)

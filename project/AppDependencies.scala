@@ -3,7 +3,7 @@ import sbt.*
 
 object AppDependencies {
 
-  val boostrapVersion = "8.5.0"
+  val boostrapVersion = "8.6.0"
   val compile = Seq(
     ws,
     "uk.gov.hmrc"                   %% "bootstrap-backend-play-30"  % boostrapVersion,

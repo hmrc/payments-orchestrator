@@ -61,7 +61,7 @@ class DesController @Inject() (
 
   def getCustomerData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     logger.debug("getCustomerData called")
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
     desConnector.getCustomerData(vrn).map{
       case Some(cd) => Ok(toJson(cd))
       case None     => notFound

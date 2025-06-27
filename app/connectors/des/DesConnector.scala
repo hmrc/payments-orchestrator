@@ -21,14 +21,19 @@ import javax.inject.{Inject, Singleton}
 import model.Vrn
 import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
 import play.api.{Configuration, Logger}
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpClient, configuration: Configuration)(implicit ec: ExecutionContext) {
+class DesConnector @Inject() (servicesConfig: ServicesConfig,
+                              httpClient:     HttpClientV2,
+                              configuration:  Configuration
+)(implicit ec: ExecutionContext) {
 
   private lazy val logger = Logger(this.getClass)
 
@@ -52,32 +57,46 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig, httpClient: HttpCl
     val now = LocalDate.now()
     val aYearAgo = LocalDate.now().minusYears(1)
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getFinancialURL: String = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=${aYearAgo.toString}&dateTo=${now.toString}"
-    logger.debug(s"""Calling des api 1166 with url $getFinancialURL""")
-    httpClient.GET[Option[FinancialData]](getFinancialURL, headers = headers)
+    val getFinancialURL = new URL(s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=${aYearAgo.toString}&dateTo=${now.toString}")
+    logger.debug(s"""Calling des api 1166 with url ${getFinancialURL.toString}""")
+    httpClient
+      .get(getFinancialURL)
+      .setHeader(headers: _*)
+      .execute[Option[FinancialData]]
   }
 
   def getCustomerData(vrn: Vrn): Future[Option[CustomerInformation]] = {
     logger.debug(s"Calling des api 1363 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getCustomerURL: String = s"$serviceURL$customerUrl/${vrn.value}/information"
-    logger.debug(s"""Calling des api 1363 with url $getCustomerURL""")
-    httpClient.GET[Option[CustomerInformation]](getCustomerURL, headers = headers)
+    println(s"serivecUrl is $serviceURL\n\n\n")
+    println(s"customerUrl is $customerUrl\n\n\n")
+    val getCustomerURL = new URL(s"$serviceURL$customerUrl/${vrn.value}/information")
+    logger.debug(s"""Calling des api 1363 with url ${getCustomerURL.toString}""")
+    httpClient
+      .get(getCustomerURL)
+      .setHeader(headers: _*)
+      .execute[Option[CustomerInformation]]
   }
 
   def getDDData(vrn: Vrn): Future[Option[DirectDebitData]] = {
     logger.debug(s"Calling des api 1396 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getDDUrl: String = s"$serviceURL$ddUrl/${vrn.value}"
-    logger.debug(s"""Calling des api 1396 with url $getDDUrl""")
-    httpClient.GET[Option[DirectDebitData]](getDDUrl, headers = headers)
+    val getDDUrl = new URL(s"$serviceURL$ddUrl/${vrn.value}")
+    logger.debug(s"""Calling des api 1396 with url ${getDDUrl.toString}""")
+    httpClient
+      .get(getDDUrl)
+      .setHeader(headers: _*)
+      .execute[Option[DirectDebitData]]
   }
 
   def getRepaymentDetails(vrn: Vrn): Future[Option[Seq[RepaymentDetailData]]] = {
     logger.debug(s"Calling des api 1533 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier1533
-    val getRDUrl: String = s"$serviceURL$repaymentDetailsUrl/${vrn.value}"
-    logger.debug(s"""Calling des api 1533 with url $getRDUrl""")
-    httpClient.GET[Option[Seq[RepaymentDetailData]]](getRDUrl, headers = headers)
+    val getRDUrl = new URL(s"$serviceURL$repaymentDetailsUrl/${vrn.value}")
+    logger.debug(s"""Calling des api 1533 with url ${getRDUrl.toString}""")
+    httpClient
+      .get(getRDUrl)
+      .setHeader(headers: _*)
+      .execute[Option[Seq[RepaymentDetailData]]]
   }
 }

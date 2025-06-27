@@ -20,14 +20,12 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.matchers.should.Matchers
-import org.scalatestplus.play.guice.GuiceOneServerPerTest
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
-
 import scala.concurrent.ExecutionContext
 
 /**
@@ -36,22 +34,22 @@ import scala.concurrent.ExecutionContext
 
 trait ItSpec
   extends AnyFreeSpecLike
-  with GuiceOneServerPerTest
+  with GuiceOneServerPerSuite
   with WireMockSupport
   with Matchers
   with ScalaFutures {
 
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
-  def fakeRequest(method: String = "", url: String = ""): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, url).withHeaders(
-    uk.gov.hmrc.http.HeaderNames.authorisation -> "Bearer 123"
-  )
+  def fakeRequest(method: String = "", url: String = ""): FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest(method, url)
+      .withHeaders(uk.gov.hmrc.http.HeaderNames.authorisation -> "Bearer 123")
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
     timeout  = scaled(Span(3, Seconds)),
     interval = scaled(Span(300, Millis)))
 
-  lazy val injector: Injector = fakeApplication().injector
+  lazy val injector: Injector = app.injector
 
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()

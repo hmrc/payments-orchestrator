@@ -68,8 +68,6 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
   def getCustomerData(vrn: Vrn): Future[Option[CustomerInformation]] = {
     logger.debug(s"Calling des api 1363 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    println(s"serivecUrl is $serviceURL\n\n\n")
-    println(s"customerUrl is $customerUrl\n\n\n")
     val getCustomerURL = new URL(s"$serviceURL$customerUrl/${vrn.value}/information")
     logger.debug(s"""Calling des api 1363 with url ${getCustomerURL.toString}""")
     httpClient

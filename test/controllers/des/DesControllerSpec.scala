@@ -35,11 +35,10 @@ class DesControllerSpec extends ItSpec {
   private val mtdVrn: Vrn = Vrn("2345678890")
   private val vatDecVrn: Vrn = Vrn("1345678890")
   private val vatVarVrn: Vrn = Vrn("3345678890")
-  private val vrnList: List[Vrn] = List(vatVarVrn, mtdVrn, vatDecVrn)
-  private val keyList: List[String] = List(vatVarEnrolmentKey, mtdVatEnrolmentKey, vatDecEnrolmentKey)
+
   implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
 
-  val controller: DesController = injector.instanceOf[DesController]
+  lazy val controller: DesController = injector.instanceOf[DesController]
 
   "Get Customer Information" in {
     authOkWithSeveralEnrolments(List(vatVarVrn -> vatVarEnrolmentKey, mtdVrn -> mtdVatEnrolmentKey, vatDecVrn -> vatDecEnrolmentKey))

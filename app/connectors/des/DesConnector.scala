@@ -26,7 +26,6 @@ import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readOptionOfNotFound}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -57,10 +56,10 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
     val now = LocalDate.now()
     val aYearAgo = LocalDate.now().minusYears(1)
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getFinancialURL = new URL(s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=${aYearAgo.toString}&dateTo=${now.toString}")
+    val getFinancialURL = s"$serviceURL$financialsUrl/${vrn.value}/VATC?dateFrom=${aYearAgo.toString}&dateTo=${now.toString}"
     logger.debug(s"""Calling des api 1166 with url ${getFinancialURL.toString}""")
     httpClient
-      .get(getFinancialURL)
+      .get(url"$getFinancialURL")
       .setHeader(headers: _*)
       .execute[Option[FinancialData]]
   }
@@ -68,10 +67,10 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
   def getCustomerData(vrn: Vrn): Future[Option[CustomerInformation]] = {
     logger.debug(s"Calling des api 1363 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getCustomerURL = new URL(s"$serviceURL$customerUrl/${vrn.value}/information")
+    val getCustomerURL = s"$serviceURL$customerUrl/${vrn.value}/information"
     logger.debug(s"""Calling des api 1363 with url ${getCustomerURL.toString}""")
     httpClient
-      .get(getCustomerURL)
+      .get(url"$getCustomerURL")
       .setHeader(headers: _*)
       .execute[Option[CustomerInformation]]
   }
@@ -79,10 +78,10 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
   def getDDData(vrn: Vrn): Future[Option[DirectDebitData]] = {
     logger.debug(s"Calling des api 1396 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier
-    val getDDUrl = new URL(s"$serviceURL$ddUrl/${vrn.value}")
+    val getDDUrl = s"$serviceURL$ddUrl/${vrn.value}"
     logger.debug(s"""Calling des api 1396 with url ${getDDUrl.toString}""")
     httpClient
-      .get(getDDUrl)
+      .get(url"$getDDUrl")
       .setHeader(headers: _*)
       .execute[Option[DirectDebitData]]
   }
@@ -90,10 +89,10 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
   def getRepaymentDetails(vrn: Vrn): Future[Option[Seq[RepaymentDetailData]]] = {
     logger.debug(s"Calling des api 1533 for vrn ${vrn.toString}")
     implicit val hc: HeaderCarrier = desHeaderCarrier1533
-    val getRDUrl = new URL(s"$serviceURL$repaymentDetailsUrl/${vrn.value}")
+    val getRDUrl = s"$serviceURL$repaymentDetailsUrl/${vrn.value}"
     logger.debug(s"""Calling des api 1533 with url ${getRDUrl.toString}""")
     httpClient
-      .get(getRDUrl)
+      .get(url"$getRDUrl")
       .setHeader(headers: _*)
       .execute[Option[Seq[RepaymentDetailData]]]
   }

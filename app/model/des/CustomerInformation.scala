@@ -122,7 +122,7 @@ object Address {
   implicit val format: OFormat[Address] = Json.format[Address]
 }
 
-final case class BankDetails(accountHolderName: Option[String], bankAccountNumber: Option[String], sortCode: Option[String], formInformation: Option[FormInformation])
+final case class BankDetails(accountHolderName: Option[String], bankAccountNumber: Option[String], sortCode: Option[String], buildingSocietyNumber: Option[String], formInformation: Option[FormInformation])
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 object BankDetails {

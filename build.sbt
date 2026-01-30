@@ -1,8 +1,8 @@
-import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
+import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 
-scalaVersion := "2.13.16"
+scalaVersion := "3.5.2"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
@@ -10,8 +10,8 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     libraryDependencySchemes ++= Seq("org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always),
     retrieveManaged := false,
-    routesGenerator := InjectedRoutesGenerator,
-    update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false)
+    routesGenerator := InjectedRoutesGenerator
+//    update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false)
   )
   .settings(majorVersion := 0)
   .settings(ScalariformSettings())
@@ -28,7 +28,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 8418)
   .settings(scalaSettings *)
   .settings(defaultSettings() *)
-  .configs(IntegrationTest)
   .settings(
     routesImport ++= Seq(
       "model._",
@@ -36,16 +35,21 @@ lazy val microservice = Project(appName, file("."))
     ))
   .settings(
     scalacOptions ++= Seq(
+      "-explain",
       "-Xfatal-warnings",
-      "-Xlint:-missing-interpolator,_",
-      "-Ywarn-value-discard",
-      "-Ywarn-dead-code",
+//      "-Xlint:-missing-interpolator,_",
+      "-Wvalue-discard",
       "-deprecation",
       "-feature",
       "-unchecked",
       "-language:implicitConversions",
       "-language:reflectiveCalls",
-      "-Ywarn-unused:-imports,-patvars,-privates,-locals,-explicits,-implicits,_"
+      "-Wunused:imports",
+      "-Wunused:privates",
+      "-Wunused:locals",
+      "-Wunused:explicits",
+      "-Wunused:implicits",
+      "-Wconf:src=routes/.*:s"
     )
   )
   .disablePlugins(JUnitXmlReportPlugin)

@@ -25,11 +25,9 @@ import play.api.Logger
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
-import uk.gov.hmrc.http.HeaderCarrier
 import play.api.mvc.Request
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.ExecutionContext
 
@@ -86,7 +84,7 @@ class DesController @Inject() (
     }
   }
 
-  private def notFound(implicit request: Request[_]) = {
+  private def notFound(implicit request: Request[?]) = {
     NotFound(Json.toJson(ErrorResponse(NOT_FOUND, "URI not found", requested = Some(request.path))))
   }
 

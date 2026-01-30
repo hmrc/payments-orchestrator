@@ -16,7 +16,7 @@
 
 package model.des
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
 

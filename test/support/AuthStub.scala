@@ -21,10 +21,8 @@ import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model.Vrn
-import play.api.libs.json.Json
 import support.DesData.vrn
 import support.WireMockSupport.wireMockBaseUrlAsString
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 
 object AuthStub {
   private val oid: String = "556737e15500005500eaf68f"

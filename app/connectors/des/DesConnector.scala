@@ -60,7 +60,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
     logger.debug(s"""Calling des api 1166 with url ${getFinancialURL.toString}""")
     httpClient
       .get(url"$getFinancialURL")
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[Option[FinancialData]]
   }
 
@@ -71,7 +71,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
     logger.debug(s"""Calling des api 1363 with url ${getCustomerURL.toString}""")
     httpClient
       .get(url"$getCustomerURL")
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[Option[CustomerInformation]]
   }
 
@@ -82,7 +82,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
     logger.debug(s"""Calling des api 1396 with url ${getDDUrl.toString}""")
     httpClient
       .get(url"$getDDUrl")
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[Option[DirectDebitData]]
   }
 
@@ -93,7 +93,7 @@ class DesConnector @Inject() (servicesConfig: ServicesConfig,
     logger.debug(s"""Calling des api 1533 with url ${getRDUrl.toString}""")
     httpClient
       .get(url"$getRDUrl")
-      .setHeader(headers: _*)
+      .setHeader(headers*)
       .execute[Option[Seq[RepaymentDetailData]]]
   }
 }

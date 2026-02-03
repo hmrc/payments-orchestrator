@@ -16,8 +16,7 @@
 
 package model
 
-object EnrolmentKeys {
-  val mtdVatEnrolmentKey = "HMRC-MTD-VAT"
+object EnrolmentKeys:
+  val mtdVatEnrolmentKey = "HMC-MTD-VAT"
   val vatDecEnrolmentKey = "HMCE-VATDEC-ORG"
   val vatVarEnrolmentKey = "HMCE-VATVAR-ORG"
-}

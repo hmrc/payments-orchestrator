@@ -3,7 +3,7 @@ import sbt.{Def, *}
 import scoverage.ScoverageKeys
 
 object ScoverageSettings {
-  def apply(): Seq[Def.Setting[_ >: String with Double with Boolean]] = Seq( // Semicolon-separated list of regexes matching classes to exclude
+  def apply(): Seq[Def.Setting[? >: String & Double & Boolean]] = Seq( // Semicolon-separated list of regexes matching classes to exclude
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*(config|views.*);.*(AuthService|BuildInfo|Routes).*",
     ScoverageKeys.coverageExcludedFiles := Seq(
       "" +
@@ -21,6 +21,6 @@ object ScoverageSettings {
     ScoverageKeys.coverageMinimumStmtTotal := 70,  //should be a lot higher but we are where we are
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
-    parallelExecution in Test := false
+    Test / parallelExecution := false
   )
 }

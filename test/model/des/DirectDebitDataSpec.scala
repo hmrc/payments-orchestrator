@@ -17,9 +17,9 @@
 package model.des
 
 import play.api.libs.json.Json
-import support.{DesData, UnitSpec}
+import support.{ DesData, UnitSpec }
 
-class DirectDebitDataSpec extends UnitSpec {
+class DirectDebitDataSpec extends UnitSpec:
 
   "to json" in {
     Json.toJson(DesData.directDebitData) shouldBe DesData.directDebitDataJson
@@ -28,4 +28,3 @@ class DirectDebitDataSpec extends UnitSpec {
   "from json" in {
     DesData.directDebitDataJson.as[DirectDebitData] shouldBe DesData.directDebitData
   }
-}

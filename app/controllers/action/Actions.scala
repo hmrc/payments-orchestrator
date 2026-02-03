@@ -16,42 +16,37 @@
 
 package controllers.action
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import model.Vrn
 import play.api.Logger
-import play.api.mvc._
+import play.api.mvc.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
+class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathResponses: UnhappyPathResponses)(using ExecutionContext):
 
   private lazy val logger = Logger(this.getClass)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+
   def securedAction(vrn: Vrn): ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction andThen validateVrn(vrn)
 
   private def validateVrn(vrn: Vrn): ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] =
-    new ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] {
+    new ActionRefiner[AuthenticatedRequest, AuthenticatedRequest]:
       override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
         vrnCheck(request, vrn)
 
-      override protected def executionContext: ExecutionContext = ec
-    }
+      override protected def executionContext: ExecutionContext = summon[ExecutionContext]
 
-  private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] = {
+  private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] =
     val enrolmentList = request.enrolmentsVrn
-    if (enrolmentList.nonEmpty) {
-      if (enrolmentList.exists(_.vrn == vrn)) {
+    if enrolmentList.nonEmpty then
+      if enrolmentList.exists(_.vrn == vrn) then
         Future.successful(Right(request))
-      } else {
+      else
         logger.debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${enrolmentList.head.vrn.value}""")
-        implicit val req: AuthenticatedRequest[_] = request
+        implicit val req: AuthenticatedRequest[?] = request
         Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
-      }
-    } else {
+    else
       logger.debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
-      implicit val req: AuthenticatedRequest[_] = request
+      implicit val req: AuthenticatedRequest[?] = request
       Future.successful(Left(unhappyPathResponses.unauthorised))
-    }
-  }
-}

@@ -16,15 +16,14 @@
 
 package controllers.action
 
-import model.EnrolmentKeys.{mtdVatEnrolmentKey, vatDecEnrolmentKey, vatVarEnrolmentKey}
+import model.EnrolmentKeys.*
 import model.TypedVrn.{ClassicVrn, MtdVrn}
 import model.Vrn.validVrnKey
 import model.{TypedVrn, Vrn}
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 
-@SuppressWarnings(Array("org.wartremover.warts.JavaSerializable"))
-final class AuthenticatedRequest[A](val request: Request[A], val enrolments: Enrolments) extends WrappedRequest[A](request) {
+final class AuthenticatedRequest[A](val request: Request[A], val enrolments: Enrolments) extends WrappedRequest[A](request):
   val enrolmentsVrn: Set[TypedVrn] =
     enrolments.enrolments.collect {
       case Enrolment(key, identifiers, _, _) if key == mtdVatEnrolmentKey =>
@@ -33,4 +32,3 @@ final class AuthenticatedRequest[A](val request: Request[A], val enrolments: Enr
       case Enrolment(key, identifiers, _, _) if Set(vatDecEnrolmentKey, vatVarEnrolmentKey).contains(key) =>
         identifiers.collectFirst { case EnrolmentIdentifier(k, vrn) if validVrnKey(k) => ClassicVrn(Vrn(vrn)) }
     }.flatten
-}

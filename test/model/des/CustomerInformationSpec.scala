@@ -17,9 +17,9 @@
 package model.des
 
 import play.api.libs.json.Json
-import support.{DesData, UnitSpec}
+import support.{ DesData, UnitSpec }
 
-class CustomerInformationSpec extends UnitSpec {
+class CustomerInformationSpec extends UnitSpec:
 
   "to json" in {
     Json.toJson(DesData.approvedCustomerInformation) shouldBe DesData.approvedInformationJson
@@ -54,5 +54,3 @@ class CustomerInformationSpec extends UnitSpec {
       DesData.approvedInformationDeregisteredJson.as[CustomerInformation] shouldBe DesData.approvedCustomerInformationDeregistered
     }
   }
-
-}

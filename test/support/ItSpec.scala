@@ -17,7 +17,7 @@
 package support
 
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -37,16 +37,16 @@ trait ItSpec
   with GuiceOneServerPerSuite
   with WireMockSupport
   with Matchers
-  with ScalaFutures {
+  with ScalaFutures:
 
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  given ExecutionContext = ExecutionContext.Implicits.global
 
   def fakeRequest(method: String = "", url: String = ""): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(method, url)
       .withHeaders(uk.gov.hmrc.http.HeaderNames.authorisation -> "Bearer 123")
 
-  override implicit val patienceConfig: PatienceConfig = PatienceConfig(
-    timeout  = scaled(Span(3, Seconds)),
+  given PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(3, Seconds)),
     interval = scaled(Span(300, Millis)))
 
   lazy val injector: Injector = app.injector
@@ -57,7 +57,4 @@ trait ItSpec
         "microservice.services.auth.port" -> WireMockSupport.port,
         "microservice.services.des.port" -> WireMockSupport.port,
         "microservice.services.auth.port" -> WireMockSupport.port,
-        "microservice.services.auth.host" -> WireMockSupport.wireMockHost
-      )).build()
-}
-
+        "microservice.services.auth.host" -> WireMockSupport.wireMockHost)).build()

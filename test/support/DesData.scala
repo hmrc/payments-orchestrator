@@ -19,10 +19,10 @@ package support
 import java.time.LocalDate
 
 import model.Vrn
-import model.des.{DirectDebitDetails, _}
-import play.api.libs.json.{JsValue, Json}
+import model.des.{ DirectDebitDetails, _ }
+import play.api.libs.json.{ JsValue, Json }
 
-object DesData {
+object DesData:
   val vrn: Vrn = Vrn("2345678890")
 
   private val approvedInformation =
@@ -51,19 +51,16 @@ object DesData {
     "INITIAL",
     BigDecimal(1000),
     Option(1),
-    100.02
-  ))
+    100.02))
 
   val deregistrationData: Deregistration = Deregistration(
-    deregistrationReason     = Some("0001"),
+    deregistrationReason = Some("0001"),
     effectDateOfCancellation = Some(LocalDate.parse("2001-01-01")),
-    lastReturnDueDate        = Some(LocalDate.parse("2001-01-01"))
-  )
+    lastReturnDueDate = Some(LocalDate.parse("2001-01-01")))
 
   val approvedCustomerInformationDeregistered: CustomerInformation = CustomerInformation(
     Some(approvedInformation.copy(deregistration = Some(deregistrationData))),
-    None
-  )
+    None)
 
   //language=JSON
   val repaymentDetailJson: JsValue = Json.parse(
@@ -76,16 +73,14 @@ object DesData {
         "vatToPay_BOX5": 1000,
         "supplementDelayDays": 1,
         "originalPostingAmount": 100.02
-    }]""".stripMargin
-  )
+    }]""".stripMargin)
 
   //language=JSON
   val repaymentDetailsNotFound: JsValue = Json.parse(
     s"""{
           "code": "NOT_FOUND",
           "reason": "The remote endpoint has indicated that no data can be found"
-        }""".stripMargin
-  )
+        }""".stripMargin)
 
   //language=JSON
   val directDebitDataJson: JsValue = Json.parse(
@@ -177,8 +172,7 @@ object DesData {
              }
           ]
        }
-     """.stripMargin
-  )
+     """.stripMargin)
 
   //language=JSON
   val customerDataNotFound: JsValue = Json.parse(
@@ -789,8 +783,7 @@ object DesData {
                ]
             }
          ]
-      }""".stripMargin
-  )
+      }""".stripMargin)
 
   //language=JSON
   def financialDataOkTRS404(vrn: Vrn): JsValue = Json.parse(
@@ -927,7 +920,5 @@ object DesData {
              ]
           }
        ]
-    }""".stripMargin
-  )
-}
+    }""".stripMargin)
 

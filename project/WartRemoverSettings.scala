@@ -20,7 +20,6 @@ object  WartRemoverSettings {
       Wart.ArrayEquals,
       Wart.AnyVal,
       Wart.EitherProjectionPartial,
-      Wart.Enumeration,
       Wart.ExplicitImplicitTypes,
       Wart.FinalVal,
       Wart.JavaConversions,

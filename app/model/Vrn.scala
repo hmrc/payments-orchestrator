@@ -17,8 +17,8 @@
 package model
 
 import controllers.ValueClassBinder.valueClassBinder
-import model.TypedVrn.{ClassicVrn, MtdVrn}
-import play.api.libs.functional.syntax._
+import model.TypedVrn.{ ClassicVrn, MtdVrn }
+import play.api.libs.functional.syntax.*
 import play.api.libs.json.Format
 import play.api.mvc.PathBindable
 
@@ -27,30 +27,18 @@ import play.api.mvc.PathBindable
  */
 final case class Vrn(value: String)
 
-object Vrn {
-
-  implicit val format: Format[Vrn] = implicitly[Format[String]].inmap(Vrn(_), _.value)
-  implicit val vrnBinder: PathBindable[Vrn] = valueClassBinder(_.value)
+object Vrn:
+  given Format[Vrn] = implicitly[Format[String]].inmap(Vrn(_), _.value)
+  given vrnBinder: PathBindable[Vrn] = valueClassBinder(_.value)
   val validVrnKeys: List[String] = List("VRN", "VATRegNo")
 
   def validVrnKey(vrnKey: String): Boolean = validVrnKeys.contains(vrnKey)
 
-  def isMtdEnroled(typedVrn: TypedVrn): Boolean = typedVrn match {
-    case _: ClassicVrn => false
-    case _: MtdVrn     => true
-  }
+  def isMtdEnroled(typedVrn: TypedVrn): Boolean = typedVrn match
+    case ClassicVrn(_) => false
+    case MtdVrn(_) => true
 
-}
 
-sealed trait TypedVrn {
-  def vrn: Vrn
-}
-
-object TypedVrn {
-
-  final case class ClassicVrn(vrn: Vrn) extends TypedVrn
-
-  final case class MtdVrn(vrn: Vrn) extends TypedVrn
-
-}
-
+enum TypedVrn(val vrn: Vrn):
+  case ClassicVrn(override val vrn: Vrn) extends TypedVrn(vrn)
+  case MtdVrn(override val vrn: Vrn) extends TypedVrn(vrn)

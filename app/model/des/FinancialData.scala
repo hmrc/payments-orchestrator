@@ -32,24 +32,21 @@ final case class FinancialData(
     processingDate:        String,
     financialTransactions: Seq[Transaction])
 
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
-object FinancialData {
-  implicit val format: OFormat[FinancialData] = Json.format[FinancialData]
-}
+
+object FinancialData:
+  given OFormat[FinancialData] = Json.format[FinancialData]
 
 final case class Transaction(
     chargeType: String,
     periodKey:  Option[String],
     items:      Option[Seq[Item]])
 
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
-object Transaction {
-  implicit val format: OFormat[Transaction] = Json.format[Transaction]
-}
+
+object Transaction:
+  given OFormat[Transaction] = Json.format[Transaction]
 
 final case class Item(clearingDate: Option[LocalDate])
 
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
-object Item {
-  implicit val format: OFormat[Item] = Json.format[Item]
-}
+
+object Item:
+  given OFormat[Item] = Json.format[Item]

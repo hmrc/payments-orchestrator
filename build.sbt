@@ -14,7 +14,6 @@ lazy val microservice = Project(appName, file("."))
 //    update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false)
   )
   .settings(majorVersion := 0)
-  .settings(ScalariformSettings())
   .settings(WartRemoverSettings.wartRemoverError)
   .settings(WartRemoverSettings.wartRemoverWarning)
   .settings(Test / compile / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference))
@@ -30,8 +29,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(defaultSettings() *)
   .settings(
     routesImport ++= Seq(
-      "model._",
-      "model.des._"
+      "model.*",
+      "model.des.*"
     ))
   .settings(
     scalacOptions ++= Seq(

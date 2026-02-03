@@ -18,12 +18,11 @@ package controllers.action
 
 import javax.inject.Singleton
 import model.Vrn
-import play.api.mvc.{Request, Result}
+import play.api.mvc.{ Request, Result }
 import play.api.mvc.Results.Unauthorized
 
 @Singleton
-class UnhappyPathResponses {
-  def unauthorised(implicit request: Request[?]): Result = Unauthorized("You do not have access to this service")
+class UnhappyPathResponses:
+  def unauthorised(using Request[?]): Result = Unauthorized("You do not have access to this service")
 
-  def unauthorised(vrn: Vrn)(implicit request: Request[?]): Result = Unauthorized(s"You do not have access to this vrn: ${vrn.value}")
-}
+  def unauthorised(vrn: Vrn)(using Request[?]): Result = Unauthorized(s"You do not have access to this vrn: ${vrn.value}")

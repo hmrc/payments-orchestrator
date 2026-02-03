@@ -16,11 +16,11 @@
 
 package support
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.Vrn
 
-object DesStub {
+object DesStub:
   def financialsOkMultiple(vrn: Vrn): StubMapping =
     stubFor(get(urlMatching("/enterprise/financial-data/VRN/.*"))
       .willReturn(aResponse()
@@ -98,4 +98,3 @@ object DesStub {
       .willReturn(aResponse()
         .withStatus(200)
         .withBody(DesData.repaymentDetailJson.toString().stripMargin)))
-}

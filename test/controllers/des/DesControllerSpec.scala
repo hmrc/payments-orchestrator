@@ -26,7 +26,7 @@ import support.AuthStub.{ authFailed, authOkNoEnrolments, authOkWithEnrolments, 
 import support.DesData.vrn
 import support.DesStub.{ customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple, financialsOkSingle }
 import support.*
-import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
+import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
 
 import java.util.concurrent.TimeUnit
 

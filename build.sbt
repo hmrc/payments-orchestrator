@@ -11,7 +11,6 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencySchemes ++= Seq("org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always),
     retrieveManaged := false,
     routesGenerator := InjectedRoutesGenerator
-//    update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false)
   )
   .settings(majorVersion := 0)
   .settings(WartRemoverSettings.wartRemoverError)
@@ -36,7 +35,6 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions ++= Seq(
       "-explain",
       "-Xfatal-warnings",
-//      "-Xlint:-missing-interpolator,_",
       "-Wvalue-discard",
       "-deprecation",
       "-feature",

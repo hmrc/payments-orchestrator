@@ -17,77 +17,66 @@
 package controllers.des
 
 import connectors.des.DesConnector
-import controllers.action.Actions
+import controllers.action.{Actions, AuthenticatedRequest}
+
 import javax.inject.{Inject, Singleton}
 import model.des.Transaction
 import model.{ChargeType, Vrn}
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.mvc.*
 import play.api.mvc.Request
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
 
 import scala.concurrent.ExecutionContext
 
 @Singleton()
 class DesController @Inject() (
-    cc:           ControllerComponents,
-    desConnector: DesConnector,
-    actions:      Actions)(
-    implicit
-    ec: ExecutionContext)
+  cc: ControllerComponents,
+  desConnector: DesConnector,
+  actions: Actions)(using ExecutionContext)
 
-  extends BackendController(cc) {
+  extends BackendController(cc):
 
   private lazy val logger = Logger(this.getClass)
 
-  def getFinancialData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
+  def getFinancialData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async: request =>
+    given AuthenticatedRequest[?] = request
     logger.debug("getFinancialData called")
-    desConnector.getFinancialData(vrn).map { maybeFinancialDetails =>
-      maybeFinancialDetails.fold(notFound: Result) { fd =>
+    desConnector.getFinancialData(vrn).map: maybeFinancialDetails =>
+      maybeFinancialDetails.fold(notFound: Result): fd =>
         val filtered = fd.financialTransactions.filter(f => isCreditOrDebitChargeType(f))
 
-        if (filtered.isEmpty) notFound
+        if filtered.isEmpty then notFound
         else Ok(toJson(fd.copy(financialTransactions = filtered)))
-      }
-    }
-  }
+  
 
   private def isCreditOrDebitChargeType(transaction: Transaction): Boolean = transaction.chargeType == ChargeType.vatReturnCreditCharge || transaction.chargeType == ChargeType.vatReturnDebitCharge
 
-  def getCustomerData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
+  def getCustomerData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async: request =>
+    given AuthenticatedRequest[?] = request
     logger.debug("getCustomerData called")
-
-    desConnector.getCustomerData(vrn).map{
+    desConnector.getCustomerData(vrn).map:
       case Some(cd) => Ok(toJson(cd))
-      case None     => notFound
-    }
-  }
+      case None => notFound
 
-  def getDDData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
+  def getDDData(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async: request =>
+    given AuthenticatedRequest[?] = request 
     logger.debug("getDDData called")
-    desConnector.getDDData(vrn).map{
+    desConnector.getDDData(vrn).map:
       case Some(dd) => Ok(toJson(dd))
-      case None     => notFound
-    }
-  }
+      case None => notFound
 
-  def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
+  def getRepaymentDetails(vrn: Vrn): Action[AnyContent] = actions.securedAction(vrn).async: request =>
+    given AuthenticatedRequest[?] = request
     logger.debug("getRepaymentDetails called")
-    desConnector.getRepaymentDetails(vrn).map{
+    desConnector.getRepaymentDetails(vrn).map:
       case Some(rd) =>
         logger.warn(s"KNOZ: DES-data VRN:${vrn.value} " + rd.mkString("", ", ", ""))
         Ok(toJson(rd))
       case None => notFound
-    }
-  }
 
-  private def notFound(implicit request: Request[_]) = {
+  private def notFound(using request: Request[?]) =
     NotFound(Json.toJson(ErrorResponse(NOT_FOUND, "URI not found", requested = Some(request.path))))
-  }
-
-}

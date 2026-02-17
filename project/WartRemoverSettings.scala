@@ -1,7 +1,6 @@
-import sbt.Compile
-import sbt.Keys.compile
+import sbt.*
+import sbt.Keys.*
 import wartremover.Wart
-import wartremover.WartRemover.autoImport.{wartremoverWarnings, wartremoverErrors}
 
 object  WartRemoverSettings {
 
@@ -13,7 +12,7 @@ object  WartRemoverSettings {
       Wart.IsInstanceOf,
       Wart.Any
     )
-    wartremoverWarnings in(Compile, compile) ++= warningWarts
+    Compile / compile / wartremover.WartRemover.autoImport.wartremoverWarnings ++= warningWarts
   }
   lazy val wartRemoverError = {
     // Error
@@ -21,7 +20,6 @@ object  WartRemoverSettings {
       Wart.ArrayEquals,
       Wart.AnyVal,
       Wart.EitherProjectionPartial,
-      Wart.Enumeration,
       Wart.ExplicitImplicitTypes,
       Wart.FinalVal,
       Wart.JavaConversions,
@@ -36,6 +34,6 @@ object  WartRemoverSettings {
       Wart.Var,
       Wart.While)
 
-    wartremoverErrors in(Compile, compile) ++= errorWarts
+    Compile / compile / wartremover.WartRemover.autoImport.wartremoverErrors ++= errorWarts
   }
 }

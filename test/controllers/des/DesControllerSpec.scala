@@ -17,26 +17,26 @@
 package controllers.des
 
 import org.apache.pekko.util.Timeout
-import model.EnrolmentKeys._
+import model.EnrolmentKeys.*
 import model.Vrn
-import model.des.{CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData}
+import model.des.{ CustomerInformation, DirectDebitData, FinancialData, RepaymentDetailData }
 import play.api.libs.json.Json
-import play.api.test.Helpers.{contentAsJson, contentAsString, status}
-import support.AuthStub.{authFailed, authOkNoEnrolments, authOkWithEnrolments, authOkWithSeveralEnrolments}
+import play.api.test.Helpers.{ contentAsJson, contentAsString, status }
+import support.AuthStub.{ authFailed, authOkNoEnrolments, authOkWithEnrolments, authOkWithSeveralEnrolments }
 import support.DesData.vrn
-import support.DesStub.{customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple, financialsOkSingle}
-import support._
-import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
+import support.DesStub.{ customerDataOkWithBankDetails, customerNotFound, financialsOkMultiple, financialsOkSingle }
+import support.*
+import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
 
 import java.util.concurrent.TimeUnit
 
-class DesControllerSpec extends ItSpec {
+class DesControllerSpec extends ItSpec: 
   private val vrnFailed = Vrn("2345678891")
   private val mtdVrn: Vrn = Vrn("2345678890")
   private val vatDecVrn: Vrn = Vrn("1345678890")
   private val vatVarVrn: Vrn = Vrn("3345678890")
 
-  implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
+  given Timeout = Timeout(5, TimeUnit.SECONDS)
 
   lazy val controller: DesController = injector.instanceOf[DesController]
 
@@ -144,7 +144,7 @@ class DesControllerSpec extends ItSpec {
   "Get repayment data, not authorised should result in a failed future result" in {
     authFailed()
     val result = controller.getCustomerData(vrn)(fakeRequest())
-    whenReady(result.failed){ ex =>
+    whenReady(result.failed) { ex =>
       ex.getMessage should include("Session record not found")
     }
   }
@@ -162,4 +162,3 @@ class DesControllerSpec extends ItSpec {
     status(result) shouldBe 401
     contentAsString(result) should include("You do not have access to this service")
   }
-}

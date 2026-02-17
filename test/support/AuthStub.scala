@@ -16,17 +16,15 @@
 
 package support
 
-import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders}
+import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.http.{ HttpHeader, HttpHeaders }
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model.Vrn
-import play.api.libs.json.Json
 import support.DesData.vrn
 import support.WireMockSupport.wireMockBaseUrlAsString
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 
-object AuthStub {
+object AuthStub:
   private val oid: String = "556737e15500005500eaf68f"
 
   private val headers = new HttpHeaders(new HttpHeader("WWW-Authenticate", "MDTP detail=\"SessionRecordNotFound\""))
@@ -107,20 +105,19 @@ object AuthStub {
              }
        """.stripMargin)))
 
-  def authOkWithSeveralEnrolments(vrnList: List[(Vrn, String)]): StubMapping = {
+  def authOkWithSeveralEnrolments(vrnList: List[(Vrn, String)]): StubMapping =
 
-    val mappedList = vrnList.map{
-      case (vrn, key) => s"""{
-                               |"key": "$key",
-                               |"identifiers": [
-                               | {
-                               |   "key": "VRN",
-                               |   "value": "${vrn.value}"
-                               | }
-                               |],
-                               |"state": "Activated"
-                               |}""".stripMargin
-    }.mkString(",")
+    val mappedList = vrnList.map: (vrn, key) =>
+      s"""{
+           |"key": "$key",
+           |"identifiers": [
+           | {
+           |   "key": "VRN",
+           |   "value": "${vrn.value}"
+           | }
+           |],
+           |"state": "Activated"
+           |}""".stripMargin
 
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
@@ -147,9 +144,7 @@ object AuthStub {
                "groupIdentifier": "groupId",
                "affinityGroup": "Individual",
                "allEnrolments": [
-               $mappedList
+               ${mappedList.mkString(",")}
                ]
              }
        """.stripMargin)))
-  }
-}

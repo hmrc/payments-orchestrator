@@ -18,16 +18,18 @@ package model.des
 
 import play.api.libs.json.{Json, OFormat}
 
+
+
 final case class DirectDebitData(directDebitDetails: Option[List[DirectDebitDetails]])
 
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
-object DirectDebitData {
-  implicit val format: OFormat[DirectDebitData] = Json.format[DirectDebitData]
-}
+
+object DirectDebitData:
+  given OFormat[DirectDebitData] = Json.format[DirectDebitData]
+
+
 
 final case class DirectDebitDetails(accountHolderName: String, sortCode: String, accountNumber: String)
 
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
-object DirectDebitDetails {
-  implicit val format: OFormat[DirectDebitDetails] = Json.format[DirectDebitDetails]
-}
+
+object DirectDebitDetails:
+  given OFormat[DirectDebitDetails] = Json.format[DirectDebitDetails]

@@ -17,9 +17,9 @@
 package model.des
 
 import play.api.libs.json.Json
-import support.{DesData, UnitSpec}
+import support.{ DesData, UnitSpec }
 
-class FinancialDataSpec extends UnitSpec {
+class FinancialDataSpec extends UnitSpec:
 
   "to json" in {
     Json.toJson(DesData.financialData) shouldBe DesData.financialDataJson
@@ -28,4 +28,3 @@ class FinancialDataSpec extends UnitSpec {
   "from json" in {
     DesData.financialDataJson.as[FinancialData] shouldBe DesData.financialData
   }
-}

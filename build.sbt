@@ -26,6 +26,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 8418)
   .settings(scalaSettings *)
   .settings(defaultSettings() *)
+  .settings(ScoverageSettings())
+  .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(
     routesImport ++= Seq(
       "model.*",

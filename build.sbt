@@ -27,7 +27,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(scalaSettings *)
   .settings(defaultSettings() *)
   .settings(ScoverageSettings())
-  .settings(SbtUpdatesSettings.sbtUpdatesSettings).
+  .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(
     routesImport ++= Seq(
       "model.*",
